@@ -1,0 +1,1 @@
+{"remappings":["@openzeppelin/contracts/token/ERC20/IERC20.sol=/mnt/contracts/openzeppelin/IERC20.sol","@openzeppelin/contracts/access/Ownable.sol=/mnt/contracts/openzeppelin/Ownable.sol","@openzeppelin/contracts/utils/Address.sol=/mnt/contracts/openzeppelin/Address.sol","./Context.sol=Context.sol"]}
