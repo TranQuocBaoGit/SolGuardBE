@@ -1,4 +1,4 @@
-FROM golang:1.19-alpine
+FROM golang:1.22-alpine
 
 WORKDIR /app
 
@@ -6,7 +6,7 @@ RUN apk add --no-cache docker
 
 COPY go.mod go.sum ./
 
-# RUN go mod tidy
+RUN go mod tidy
 
 COPY . .
 
