@@ -257,7 +257,7 @@ func StandardizeResult(toolsResult []models.ToolResult) models.StandardizeResult
 	vulneToServerity := make(map[string]string)
 	for _, toolResult := range toolsResult{
 		for _, sumUp := range toolResult.SumUps{
-			vulne, severity := IdentifyVulnerability(sumUp.Name, toolResult.ToolName)
+			vulne, severity := IdentifyVulnerability(sumUp, toolResult.ToolName)
 			_, exist := vulneToServerity[vulne]
 			if !exist {
 				vulneToServerity[vulne] = severity
@@ -291,6 +291,11 @@ func GetHighestSeverity(sever1, sever2 string) string {
 }
 
 
-func IdentifyVulnerability(vulnerability string, tool string) (string, string) {
-	
+func IdentifyVulnerability(sumup models.SumUp, tool string) (string, string) {
+	if tool == "mythril"{
+		return docker.MythrilStandardize(sumup)
+	} else if tool == "slither"{
+		return "", ""
+	}
+	return  "", ""
 }

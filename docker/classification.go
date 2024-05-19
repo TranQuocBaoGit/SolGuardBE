@@ -3,15 +3,15 @@ package docker
 import "getContractDeployment/models"
 
 var OverallVulna map[int]string = map[int]string{
-	1: "Reentrancy",
-	2: "Arithmetic Overflow and Underflow",
-	3: "Delegatecall",
-	4: "Signature Replay",
-	5: "Random numbers generation",
-	6: "Private Data",
-	7: "Phishing with tx.origin",
-	8: "Hiding Malicious Code with External Contract",
-	9: "Honeypots",
+	1:  "Reentrancy",
+	2:  "Arithmetic Overflow and Underflow",
+	3:  "Delegatecall",
+	4:  "Signature Replay",
+	5:  "Random numbers generation",
+	6:  "Private Data",
+	7:  "Phishing with tx.origin",
+	8:  "Hiding Malicious Code with External Contract",
+	9:  "Honeypots",
 	10: "Denial of Service",
 }
 
@@ -55,31 +55,41 @@ var MythrilVulnaClass map[string]string = map[string]string{
 	"136": "Unencrypted Private Data On-Chain",
 }
 
-func MythrilStandardize(sumup models.SumUp) string {
+func MythrilStandardize(sumup models.SumUp) (string, string) {
 	name := sumup.Name
-	switch name{
+	vulnaDefine := ""
+	switch name {
 	case "Integer Overflow and Underflow":
-		return OverallVulna[2]
+		vulnaDefine = OverallVulna[2]
+		break
 	case "Delegatecall to Untrusted Callee":
-		return OverallVulna[3]
+		vulnaDefine = OverallVulna[3]
+		break
 	case "DoS with Failed Call":
 	case "DoS With Block Gas Limit":
-		return OverallVulna[10]
+		vulnaDefine = OverallVulna[10]
+		break
 	case "Authorization through tx.origin":
-		return OverallVulna[7]
+		vulnaDefine = OverallVulna[7]
+		break
 	case "Signature Malleability":
 	case "Missing Protection against Signature Replay Attacks":
-		return OverallVulna[4]
+		vulnaDefine = OverallVulna[4]
+		break
 	case "Weak Sources of Randomness from Chain Attributes":
-		return OverallVulna[5]
+		vulnaDefine = OverallVulna[5]
+		break
 	case "Unencrypted Private Data On-Chain":
-		return OverallVulna[6]
+		vulnaDefine = OverallVulna[6]
+		break
 	case "Reentrancy":
-		return OverallVulna[1]
+		vulnaDefine = OverallVulna[1]
+		break
 	default:
-		return name
+		vulnaDefine = name
+		break
 	}
-	return name
+	return vulnaDefine, sumup.Severity
 }
 
 var SlitherVulnaClass map[string]string = map[string]string{

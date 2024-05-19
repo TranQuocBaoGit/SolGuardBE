@@ -4,12 +4,10 @@
  - using env:	export GIN_MODE=release
  - using code:	gin.SetMode(gin.ReleaseMode)
 
-[GIN-debug] GET    /api/source_code          --> getContractDeployment/routes.Route.GetContractSourceCode.func1 (3 handlers)
-[GIN-debug] GET    /api/bytecode             --> getContractDeployment/routes.Route.GetContractByteCode.func2 (3 handlers)
-[GIN-debug] POST   /api/analysis/file        --> getContractDeployment/routes.Route.PostAnalysisByFile.func3 (3 handlers)
-[GIN-debug] POST   /api/analysis/address     --> getContractDeployment/routes.Route.PostAnalysisByAddress.func4 (3 handlers)
+[GIN-debug] GET    /api/source_code          --> getContractDeployment/routes.Route.GetContractSourceCode.func2 (4 handlers)
+[GIN-debug] GET    /api/bytecode             --> getContractDeployment/routes.Route.GetContractByteCode.func3 (4 handlers)
+[GIN-debug] POST   /api/analysis/file        --> getContractDeployment/routes.Route.PostAnalysisByFile.func4 (4 handlers)
+[GIN-debug] POST   /api/analysis/address     --> getContractDeployment/routes.Route.PostAnalysisByAddress.func5 (4 handlers)
 [GIN-debug] [WARNING] You trusted all proxies, this is NOT safe. We recommend you to set a value.
 Please check https://pkg.go.dev/github.com/gin-gonic/gin#readme-don-t-trust-all-proxies for details.
 [GIN-debug] Listening and serving HTTP on 0.0.0.0:3000
-[GIN] 2024/05/17 - 20:15:14 | 500 |         2m33s |       127.0.0.1 | POST     "/api/analysis/file"
-[GIN] 2024/05/17 - 20:16:01 | 200 |   51.5023318s |       127.0.0.1 | POST     "/api/analysis/file"
