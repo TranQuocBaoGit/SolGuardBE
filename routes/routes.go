@@ -28,5 +28,5 @@ func Route(config configs.Config) {
 	router.POST("/api/analysis/address", controller.PostAnalysisByAddress())
 	
 
-	router.Run(config.SERVER)
+	router.Run(":" + config.SERVER)
 }
