@@ -1,0 +1,12 @@
+{
+  "remappings": [
+    "@openzeppelin/contracts-v4.4/utils=openzeppelin",
+    "@openzeppelin/contracts-v4.4/proxy/ERC1967=openzeppelin",
+    "@openzeppelin/contracts-v4.4/utils=openzeppelin",
+    "../Proxy.sol=Proxy.sol",
+    "./ERC1967Upgrade.sol=ERC1967Upgrade.sol",
+    "../beacon/IBeacon.sol=IBeacon.sol",
+    "../../utils/Address.sol=Address.sol",
+    "../../utils/StorageSlot.sol=StorageSlot.sol"
+  ]
+}

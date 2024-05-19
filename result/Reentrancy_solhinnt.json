@@ -1,0 +1,48 @@
+[
+  {
+    "line": 4,
+    "column": 1,
+    "severity": "Warning",
+    "message": "global import of path ./ECDSA.sol is not allowed. Specify names to import individually or bind all exports of the module into a name (import \"path\" as Name)",
+    "ruleId": "no-global-import",
+    "fix": null,
+    "filePath": "example.sol"
+  },
+  {
+    "line": 11,
+    "column": 5,
+    "severity": "Warning",
+    "message": "Explicitly mark visibility in function (Set ignoreConstructors to true if using solidity >=0.7.0)",
+    "ruleId": "func-visibility",
+    "fix": null,
+    "filePath": "example.sol"
+  },
+  {
+    "line": 15,
+    "column": 41,
+    "severity": "Warning",
+    "message": "Code contains empty blocks",
+    "ruleId": "no-empty-blocks",
+    "fix": null,
+    "filePath": "example.sol"
+  },
+  {
+    "line": 21,
+    "column": 9,
+    "severity": "Warning",
+    "message": "GC: Use Custom Errors instead of require statements",
+    "ruleId": "gas-custom-errors",
+    "fix": null,
+    "filePath": "example.sol"
+  },
+  {
+    "line": 24,
+    "column": 9,
+    "severity": "Warning",
+    "message": "GC: Use Custom Errors instead of require statements",
+    "ruleId": "gas-custom-errors",
+    "fix": null,
+    "filePath": "example.sol"
+  },
+  { "conclusion": "5 problem/s (5 warning/s)" }
+]

@@ -1,0 +1,5 @@
+create contracts579
+begin analysis
+pass get analysis from DB
+pass mythril
+pass slither

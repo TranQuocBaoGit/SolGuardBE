@@ -1,0 +1,291 @@
+[
+  {
+    "line": 5,
+    "column": 1,
+    "severity": "Warning",
+    "message": "Found more than One contract per file. 6 contracts found!",
+    "ruleId": "one-contract-per-file",
+    "fix": null,
+    "filePath": "/share/contracts/TokenBridge.sol"
+  },
+  {
+    "line": 24,
+    "column": 9,
+    "severity": "Warning",
+    "message": "Avoid to use inline assembly. It is acceptable only in rare cases",
+    "ruleId": "no-inline-assembly",
+    "fix": null,
+    "filePath": "/share/contracts/TokenBridge.sol"
+  },
+  {
+    "line": 86,
+    "column": 49,
+    "severity": "Warning",
+    "message": "Code contains empty blocks",
+    "ruleId": "no-empty-blocks",
+    "fix": null,
+    "filePath": "/share/contracts/TokenBridge.sol"
+  },
+  {
+    "line": 138,
+    "column": 9,
+    "severity": "Warning",
+    "message": "Avoid to use inline assembly. It is acceptable only in rare cases",
+    "ruleId": "no-inline-assembly",
+    "fix": null,
+    "filePath": "/share/contracts/TokenBridge.sol"
+  },
+  {
+    "line": 161,
+    "column": 9,
+    "severity": "Warning",
+    "message": "GC: Use Custom Errors instead of require statements",
+    "ruleId": "gas-custom-errors",
+    "fix": null,
+    "filePath": "/share/contracts/TokenBridge.sol"
+  },
+  {
+    "line": 164,
+    "column": 9,
+    "severity": "Warning",
+    "message": "Error message for require is too long: 58 counted / 32 allowed",
+    "ruleId": "reason-string",
+    "fix": null,
+    "filePath": "/share/contracts/TokenBridge.sol"
+  },
+  {
+    "line": 164,
+    "column": 9,
+    "severity": "Warning",
+    "message": "GC: Use Custom Errors instead of require statements",
+    "ruleId": "gas-custom-errors",
+    "fix": null,
+    "filePath": "/share/contracts/TokenBridge.sol"
+  },
+  {
+    "line": 234,
+    "column": 9,
+    "severity": "Warning",
+    "message": "Error message for require is too long: 38 counted / 32 allowed",
+    "ruleId": "reason-string",
+    "fix": null,
+    "filePath": "/share/contracts/TokenBridge.sol"
+  },
+  {
+    "line": 234,
+    "column": 9,
+    "severity": "Warning",
+    "message": "GC: Use Custom Errors instead of require statements",
+    "ruleId": "gas-custom-errors",
+    "fix": null,
+    "filePath": "/share/contracts/TokenBridge.sol"
+  },
+  {
+    "line": 235,
+    "column": 9,
+    "severity": "Warning",
+    "message": "GC: Use Custom Errors instead of require statements",
+    "ruleId": "gas-custom-errors",
+    "fix": null,
+    "filePath": "/share/contracts/TokenBridge.sol"
+  },
+  {
+    "line": 262,
+    "column": 9,
+    "severity": "Warning",
+    "message": "Error message for require is too long: 36 counted / 32 allowed",
+    "ruleId": "reason-string",
+    "fix": null,
+    "filePath": "/share/contracts/TokenBridge.sol"
+  },
+  {
+    "line": 262,
+    "column": 9,
+    "severity": "Warning",
+    "message": "GC: Use Custom Errors instead of require statements",
+    "ruleId": "gas-custom-errors",
+    "fix": null,
+    "filePath": "/share/contracts/TokenBridge.sol"
+  },
+  {
+    "line": 289,
+    "column": 9,
+    "severity": "Warning",
+    "message": "Error message for require is too long: 38 counted / 32 allowed",
+    "ruleId": "reason-string",
+    "fix": null,
+    "filePath": "/share/contracts/TokenBridge.sol"
+  },
+  {
+    "line": 289,
+    "column": 9,
+    "severity": "Warning",
+    "message": "GC: Use Custom Errors instead of require statements",
+    "ruleId": "gas-custom-errors",
+    "fix": null,
+    "filePath": "/share/contracts/TokenBridge.sol"
+  },
+  {
+    "line": 291,
+    "column": 51,
+    "severity": "Warning",
+    "message": "Avoid to use low level calls.",
+    "ruleId": "avoid-low-level-calls",
+    "fix": null,
+    "filePath": "/share/contracts/TokenBridge.sol"
+  },
+  {
+    "line": 313,
+    "column": 17,
+    "severity": "Warning",
+    "message": "Avoid to use inline assembly. It is acceptable only in rare cases",
+    "ruleId": "no-inline-assembly",
+    "fix": null,
+    "filePath": "/share/contracts/TokenBridge.sol"
+  },
+  {
+    "line": 376,
+    "column": 9,
+    "severity": "Warning",
+    "message": "Avoid to use inline assembly. It is acceptable only in rare cases",
+    "ruleId": "no-inline-assembly",
+    "fix": null,
+    "filePath": "/share/contracts/TokenBridge.sol"
+  },
+  {
+    "line": 385,
+    "column": 9,
+    "severity": "Warning",
+    "message": "Avoid to use inline assembly. It is acceptable only in rare cases",
+    "ruleId": "no-inline-assembly",
+    "fix": null,
+    "filePath": "/share/contracts/TokenBridge.sol"
+  },
+  {
+    "line": 394,
+    "column": 9,
+    "severity": "Warning",
+    "message": "Avoid to use inline assembly. It is acceptable only in rare cases",
+    "ruleId": "no-inline-assembly",
+    "fix": null,
+    "filePath": "/share/contracts/TokenBridge.sol"
+  },
+  {
+    "line": 403,
+    "column": 9,
+    "severity": "Warning",
+    "message": "Avoid to use inline assembly. It is acceptable only in rare cases",
+    "ruleId": "no-inline-assembly",
+    "fix": null,
+    "filePath": "/share/contracts/TokenBridge.sol"
+  },
+  {
+    "line": 451,
+    "column": 9,
+    "severity": "Warning",
+    "message": "Error message for require is too long: 45 counted / 32 allowed",
+    "ruleId": "reason-string",
+    "fix": null,
+    "filePath": "/share/contracts/TokenBridge.sol"
+  },
+  {
+    "line": 451,
+    "column": 9,
+    "severity": "Warning",
+    "message": "GC: Use Custom Errors instead of require statements",
+    "ruleId": "gas-custom-errors",
+    "fix": null,
+    "filePath": "/share/contracts/TokenBridge.sol"
+  },
+  {
+    "line": 510,
+    "column": 13,
+    "severity": "Warning",
+    "message": "Error message for require is too long: 47 counted / 32 allowed",
+    "ruleId": "reason-string",
+    "fix": null,
+    "filePath": "/share/contracts/TokenBridge.sol"
+  },
+  {
+    "line": 510,
+    "column": 13,
+    "severity": "Warning",
+    "message": "GC: Use Custom Errors instead of require statements",
+    "ruleId": "gas-custom-errors",
+    "fix": null,
+    "filePath": "/share/contracts/TokenBridge.sol"
+  },
+  {
+    "line": 539,
+    "column": 9,
+    "severity": "Warning",
+    "message": "Error message for require is too long: 38 counted / 32 allowed",
+    "ruleId": "reason-string",
+    "fix": null,
+    "filePath": "/share/contracts/TokenBridge.sol"
+  },
+  {
+    "line": 539,
+    "column": 9,
+    "severity": "Warning",
+    "message": "GC: Use Custom Errors instead of require statements",
+    "ruleId": "gas-custom-errors",
+    "fix": null,
+    "filePath": "/share/contracts/TokenBridge.sol"
+  },
+  {
+    "line": 575,
+    "column": 9,
+    "severity": "Warning",
+    "message": "Error message for require is too long: 37 counted / 32 allowed",
+    "ruleId": "reason-string",
+    "fix": null,
+    "filePath": "/share/contracts/TokenBridge.sol"
+  },
+  {
+    "line": 575,
+    "column": 9,
+    "severity": "Warning",
+    "message": "GC: Use Custom Errors instead of require statements",
+    "ruleId": "gas-custom-errors",
+    "fix": null,
+    "filePath": "/share/contracts/TokenBridge.sol"
+  },
+  {
+    "line": 576,
+    "column": 9,
+    "severity": "Warning",
+    "message": "Error message for require is too long: 48 counted / 32 allowed",
+    "ruleId": "reason-string",
+    "fix": null,
+    "filePath": "/share/contracts/TokenBridge.sol"
+  },
+  {
+    "line": 576,
+    "column": 9,
+    "severity": "Warning",
+    "message": "GC: Use Custom Errors instead of require statements",
+    "ruleId": "gas-custom-errors",
+    "fix": null,
+    "filePath": "/share/contracts/TokenBridge.sol"
+  },
+  {
+    "line": 621,
+    "column": 5,
+    "severity": "Warning",
+    "message": "Explicitly mark visibility in function (Set ignoreConstructors to true if using solidity >=0.7.0)",
+    "ruleId": "func-visibility",
+    "fix": null,
+    "filePath": "/share/contracts/TokenBridge.sol"
+  },
+  {
+    "line": 641,
+    "column": 5,
+    "severity": "Warning",
+    "message": "Explicitly mark visibility in function (Set ignoreConstructors to true if using solidity >=0.7.0)",
+    "ruleId": "func-visibility",
+    "fix": null,
+    "filePath": "/share/contracts/TokenBridge.sol"
+  },
+  { "conclusion": "32 problem/s (32 warning/s)" }
+]

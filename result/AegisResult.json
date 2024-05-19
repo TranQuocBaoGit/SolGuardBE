@@ -1,0 +1,9 @@
+{
+  "status": 200,
+  "message": "successful",
+  "data": {
+    "error": null,
+    "issues": [],
+    "success": true
+  }
+}
