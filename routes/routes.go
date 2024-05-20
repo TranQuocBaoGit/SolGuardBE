@@ -26,7 +26,8 @@ func Route(config configs.Config) {
 	router.GET("/api/bytecode", controller.GetContractByteCode())
 	router.POST("/api/analysis/file", controller.PostAnalysisByFile())
 	router.POST("/api/analysis/address", controller.PostAnalysisByAddress())
+	router.POST("/api/user", controller.SignUp())
 	
 
-	router.Run(":" + config.SERVER)
+	router.Run(config.SERVER)
 }

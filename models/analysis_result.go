@@ -1,5 +1,7 @@
 package models
 
+import "encoding/json"
+
 // MYTHRIL
 type MythrilResultDetail struct {
 	Error   interface{}           `json:"error"`
@@ -54,17 +56,65 @@ type SlitherElement struct {
 }
 
 // SOLHINT
-type SolhintResultDetail struct {
-	Issues      []SolhintIssue `json:"issues"`
-	Conclusion  string         `json:"conclusion,omitempty"`
+type SolhintResultDetail []SolhintDetail
+
+type SolhintDetail struct {
+	Issues      *SolhintIssue 		`json:"issues"`
+	Conclusion  *SolhintConclusion  `json:"conclusion,omitempty"`
+}
+
+type SolhintConclusion struct {
+	Conclusion string `json:"conclusion,omitempty"`
 }
 
 type SolhintIssue struct {
-	Line     int    `json:"line"`
-	Column   int    `json:"column"`
-	Severity string `json:"severity"`
-	Message  string `json:"message"`
-	RuleID   string `json:"ruleId"`
-	Fix      string `json:"fix,omitempty"`
-	FilePath string `json:"filePath"`
+	Line     int    	`json:"line"`
+	Column   int    	`json:"column"`
+	Severity string 	`json:"severity"`
+	Message  string 	`json:"message"`
+	RuleID   string 	`json:"ruleId"`
+	Fix      *string 	`json:"fix,omitempty"`
+	FilePath string 	`json:"filePath"`
+}
+
+func (i *SolhintDetail) UnmarshalJSON(data []byte) error {
+	var temp map[string]interface{}
+	if err := json.Unmarshal(data, &temp); err != nil {
+		return err
+	}
+
+	if _, exists := temp["conclusion"]; exists {
+		var c SolhintConclusion
+		if err := json.Unmarshal(data, &c); err != nil {
+			return err
+		}
+		i.Conclusion = &c
+	} else {
+		var w SolhintIssue
+		if err := json.Unmarshal(data, &w); err != nil {
+			return err
+		}
+		i.Issues = &w
+	}
+	return nil
+}
+
+// HONEYBADGER
+type HoneyBadgerResultDetail struct {
+	ExecutionPaths 			string 		`json:"execution_paths"`
+	MoneyFlow 				bool 		`json:"money_flow"`
+	HiddenStateUpdate 		interface{} `json:"hidden_state_update"`
+	BalanceDisorder 		interface{} `json:"balance_disorder"`
+	ExecutionTime 			string 		`json:"execution_time"`
+	HiddenTransfer 			interface{} `json:"hidden_transfer"`
+	AttackMethods 			[]string 	`json:"attack_methods"`
+	CashoutMethods 			[]string 	`json:"cashout_methods"`
+	EVMCodeCoverage 		string 		`json:"evm_code_coverage"`
+	StrawManContract 		interface{} `json:"straw_man_contract"`
+	SkipEmptyStringLiteral 	interface{} `json:"skip_empty_string_literal"`
+	InheritanceDisorder 	interface{} `json:"inheritance_disorder"`
+	UninitialisedStruct 	interface{} `json:"uninitialised_struct"`
+	TimeOut					interface{} `json:"timeout"`
+	DeadCode 				[]string 	`json:"dead_code"`
+	TypeDeductionOverflow 	interface{} `json:"type_deduction_overflow"`
 }

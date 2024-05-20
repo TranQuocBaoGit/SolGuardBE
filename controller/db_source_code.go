@@ -27,7 +27,7 @@ func getSourceCodeFromDB(ctx context.Context, collection *mongo.Collection, addr
 
 func saveSourceCodeToDB(ctx context.Context, collection *mongo.Collection, data *models.Contract) error {
 
-	err := models.AutoIncrementID(collection, data)
+	err := models.AutoIncrementIDContract(collection, data)
 	if err != nil {
 		return helper.MakeError(err, "(db_source_code) auto increment id")
 	}

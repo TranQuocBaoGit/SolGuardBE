@@ -80,3 +80,12 @@ func ReplacePathWithFilename(input string) string {
 
 	return result
 }
+
+func ChangeFromSolToJson(file string) string {
+	// for i, path := range filePaths {
+	if strings.HasSuffix(file, ".sol") {
+		file = strings.TrimSuffix(file, ".sol") + ".json"
+	}
+	// }
+	return file
+}

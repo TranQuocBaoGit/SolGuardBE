@@ -1,16 +1,19 @@
 package docker
 
-import "getContractDeployment/models"
+import (
+	"fmt"
+	"getContractDeployment/models"
+)
 
 var OverallVulna map[int]string = map[int]string{
-	1:  "Reentrancy",
+	1:  "Reentrancy", //Reentrancy vulnerabilities
 	2:  "Arithmetic Overflow and Underflow",
-	3:  "Delegatecall",
+	3:  "Delegatecall", //Controlled Delegatecall   Payable functions using delegatecall inside a loop
 	4:  "Signature Replay",
-	5:  "Random numbers generation",
+	5:  "Random numbers generation", //Weak PRNG    Block timestamp
 	6:  "Private Data",
-	7:  "Phishing with tx.origin",
-	8:  "Hiding Malicious Code with External Contract",
+	7:  "Phishing with tx.origin", //Dangerous usage of tx.origin
+	8:  "Hiding Malicious Code with External Contract", // arbitrary-send-eth
 	9:  "Honeypots",
 	10: "Denial of Service",
 }
@@ -85,12 +88,17 @@ func MythrilStandardize(sumup models.SumUp) (string, string) {
 	case "Reentrancy":
 		vulnaDefine = OverallVulna[1]
 		break
+	case "MYTHRIL ERROR":
+		vulnaDefine = ""
+		break
 	default:
 		vulnaDefine = name
 		break
 	}
+	fmt.Println("Mythril said: ", vulnaDefine, " with ", sumup.Severity)
 	return vulnaDefine, sumup.Severity
 }
+
 
 var SlitherVulnaClass map[string]string = map[string]string{
 	"abiencoderv2-array":          "Storage abiencoderv2 array",
@@ -187,4 +195,80 @@ var SlitherVulnaClass map[string]string = map[string]string{
 	"external-function":           "Public function that could be declared external",
 	"immutable-states":            "State variables that could be declared immutable",
 	"var-read-using-this":         "Public variable read in external context",
+}
+
+
+
+func SlitherStandardize(sumup models.SumUp) (string, string) {
+	name := sumup.Name
+	vulnaDefine := ""
+	switch name {
+	case "Storage Signed Integer Array":
+		vulnaDefine = OverallVulna[2]
+		break
+	case "Controlled Delegatecall":
+	case "Payable functions using delegatecall inside a loop":
+		vulnaDefine = OverallVulna[3]
+		break
+	case "Functions that send Ether to arbitrary destinations":
+		vulnaDefine = OverallVulna[8]
+		break
+	case "Dangerous usage of tx.origin":
+		vulnaDefine = OverallVulna[7]
+		break
+	case "Weak PRNG":
+	case "Block timestamp":
+		vulnaDefine = OverallVulna[5]
+		break
+	case "Reentrancy vulnerabilities":
+		vulnaDefine = OverallVulna[1]
+		break
+	case "SLITHER ERROR":
+		vulnaDefine = ""
+		break
+	default:
+		vulnaDefine = name
+		break
+	}
+	fmt.Println("Slither said: ", vulnaDefine, " with ", sumup.Severity)
+	return vulnaDefine, sumup.Severity
+}
+
+
+
+func SolhintStandardize(sumup models.SumUp) (string, string) {
+	name := sumup.Name
+	severity := sumup.Severity
+	vulnaDefine := ""
+	
+	switch name {
+	case "avoid-tx-origin":
+		vulnaDefine = OverallVulna[7]
+		break
+	case "not-rely-on-block-hash":
+	case "not-rely-on-time":
+		vulnaDefine = OverallVulna[5]
+		break
+	case "reentrancy":
+		vulnaDefine = OverallVulna[1]
+		break
+	case "SOLHINT ERROR":
+		vulnaDefine = ""
+		break
+	default:
+		vulnaDefine = sumup.Description
+		break
+	}
+
+	// fmt.Println("Solhint said: ", vulnaDefine, " with ", severity)
+	return vulnaDefine, severity
+}
+
+func HoneyBadgerStandardize(sumup models.SumUp) (string, string) {
+	if sumup.Name == "HONEYBADGER ERROR"{
+		return "",""
+	}
+	name := sumup.Name
+	severity := sumup.Severity
+	return name, severity
 }

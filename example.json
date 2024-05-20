@@ -1,0 +1,1045 @@
+{
+    "status": 200,
+    "message": "success",
+    "data": {
+        "contract_id": -1,
+        "standardize_result": {
+            "no_error": 9,
+            "result": [
+                {
+                    "name": "Reentrancy",
+                    "severity": "Low"
+                },
+                {
+                    "name": "Unprotected Ether Withdrawal",
+                    "severity": "High"
+                },
+                {
+                    "name": "Random numbers generation",
+                    "severity": "Low"
+                },
+                {
+                    "name": "Explicitly mark visibility in function (Set ignoreConstructors to true if using solidity >=0.7.0)",
+                    "severity": "Low"
+                },
+                {
+                    "name": "Code contains empty blocks",
+                    "severity": "Low"
+                },
+                {
+                    "name": "GC: Use Custom Errors instead of require statements",
+                    "severity": "Low"
+                },
+                {
+                    "name": "Block values as a proxy for time",
+                    "severity": "Low"
+                },
+                {
+                    "name": "Hiding Malicious Code with External Contract",
+                    "severity": "High"
+                },
+                {
+                    "name": "Dangerous strict equalities",
+                    "severity": "Medium"
+                }
+            ]
+        },
+        "tools_result": [
+            {
+                "tool_name": "mythril",
+                "no_error": 4,
+                "sum_up": [
+                    {
+                        "name": "Block values as a proxy for time",
+                        "description": "A control flow decision is made based on The block.timestamp environment variable.\nThe block.timestamp environment variable is used to determine a control flow decision. Note that the values of variables like coinbase, gaslimit, block number and timestamp are predictable and can be manipulated by a malicious miner. Also keep in mind that attackers know hashes of earlier blocks. Don't use any of those environment variables as sources of randomness and be aware that use of these variables introduces a certain level of trust into miners.",
+                        "severity": "Low"
+                    },
+                    {
+                        "name": "Reentrancy",
+                        "description": "A call to a user-supplied address is executed.\nAn external message call to an address specified by the caller is executed. Note that the callee account might contain arbitrary code and could re-enter any function within this contract. Reentering the contract in an intermediate state may lead to unexpected behaviour. Make sure that no state modifications are executed after this call and/or reentrancy guards are in place.",
+                        "severity": "Low"
+                    },
+                    {
+                        "name": "Unprotected Ether Withdrawal",
+                        "description": "Any sender can withdraw Ether from the contract account.\nArbitrary senders other than the contract creator can profitably extract Ether from the contract account. Verify the business logic carefully and make sure that appropriate security controls are in place to prevent unexpected loss of funds.",
+                        "severity": "High"
+                    },
+                    {
+                        "name": "Weak Sources of Randomness from Chain Attributes",
+                        "description": "A control flow decision is made based on The block.number environment variable.\nThe block.number environment variable is used to determine a control flow decision. Note that the values of variables like coinbase, gaslimit, block number and timestamp are predictable and can be manipulated by a malicious miner. Also keep in mind that attackers know hashes of earlier blocks. Don't use any of those environment variables as sources of randomness and be aware that use of these variables introduces a certain level of trust into miners.",
+                        "severity": "Low"
+                    }
+                ],
+                "detail": {
+                    "error": null,
+                    "issues": [
+                        {
+                            "address": 139,
+                            "code": "if (_guess == answer) {\n            (bool sent,) = msg.sender.call{value: 1 ether}(\"\");\n            require(sent, \"Failed to send Ether\");\n        }",
+                            "contract": "GuessTheRandomNumber",
+                            "description": "A control flow decision is made based on The block.timestamp environment variable.\nThe block.timestamp environment variable is used to determine a control flow decision. Note that the values of variables like coinbase, gaslimit, block number and timestamp are predictable and can be manipulated by a malicious miner. Also keep in mind that attackers know hashes of earlier blocks. Don't use any of those environment variables as sources of randomness and be aware that use of these variables introduces a certain level of trust into miners.",
+                            "filename": "/mnt/result/contracts724/example.sol",
+                            "function": "guess(uint256)",
+                            "lineno": 15,
+                            "max_gas_used": 1809,
+                            "min_gas_used": 1055,
+                            "severity": "Low",
+                            "sourceMap": "335:148",
+                            "swc-id": "116",
+                            "title": "Dependence on predictable environment variable",
+                            "txsequence": null
+                        },
+                        {
+                            "address": 196,
+                            "code": "msg.sender.call{value: 1 ether}(\"\")",
+                            "contract": "GuessTheRandomNumber",
+                            "description": "A call to a user-supplied address is executed.\nAn external message call to an address specified by the caller is executed. Note that the callee account might contain arbitrary code and could re-enter any function within this contract. Reentering the contract in an intermediate state may lead to unexpected behaviour. Make sure that no state modifications are executed after this call and/or reentrancy guards are in place.",
+                            "filename": "/mnt/result/contracts724/example.sol",
+                            "function": "guess(uint256)",
+                            "lineno": 16,
+                            "max_gas_used": 37374,
+                            "min_gas_used": 2151,
+                            "severity": "Low",
+                            "sourceMap": ":::-",
+                            "swc-id": "107",
+                            "title": "External Call To User-Supplied Address",
+                            "txsequence": null
+                        },
+                        {
+                            "address": 196,
+                            "code": "msg.sender.call{value: 1 ether}(\"\")",
+                            "contract": "GuessTheRandomNumber",
+                            "description": "Any sender can withdraw Ether from the contract account.\nArbitrary senders other than the contract creator can profitably extract Ether from the contract account. Verify the business logic carefully and make sure that appropriate security controls are in place to prevent unexpected loss of funds.",
+                            "filename": "/mnt/result/contracts724/example.sol",
+                            "function": "guess(uint256)",
+                            "lineno": 16,
+                            "max_gas_used": 37374,
+                            "min_gas_used": 2151,
+                            "severity": "High",
+                            "sourceMap": ":::-",
+                            "swc-id": "105",
+                            "title": "Unprotected Ether Withdrawal",
+                            "txsequence": null
+                        },
+                        {
+                            "address": 500,
+                            "code": "if gt(diff, x) { panic_error_0x11() }",
+                            "contract": "GuessTheRandomNumber",
+                            "description": "A control flow decision is made based on The block.number environment variable.\nThe block.number environment variable is used to determine a control flow decision. Note that the values of variables like coinbase, gaslimit, block number and timestamp are predictable and can be manipulated by a malicious miner. Also keep in mind that attackers know hashes of earlier blocks. Don't use any of those environment variables as sources of randomness and be aware that use of these variables introduces a certain level of trust into miners.",
+                            "filename": "#utility.yul",
+                            "function": "guess(uint256)",
+                            "lineno": 51,
+                            "max_gas_used": 622,
+                            "min_gas_used": 527,
+                            "severity": "Low",
+                            "sourceMap": "1361:37",
+                            "swc-id": "120",
+                            "title": "Dependence on predictable environment variable",
+                            "txsequence": null
+                        }
+                    ],
+                    "success": true
+                },
+                "time_elapsed": 31.5531199
+            },
+            {
+                "tool_name": "slither",
+                "no_error": 3,
+                "sum_up": [
+                    {
+                        "name": "Functions that send Ether to arbitrary destinations",
+                        "description": "GuessTheRandomNumber.guess(uint256) (example.sol#8-19) sends eth to arbitrary user\n\tDangerous calls:\n\t- (sent) = msg.sender.call{value: 1000000000000000000}() (example.sol#16)\n",
+                        "severity": "High"
+                    },
+                    {
+                        "name": "Dangerous strict equalities",
+                        "description": "GuessTheRandomNumber.guess(uint256) (example.sol#8-19) uses a dangerous strict equality:\n\t- _guess == answer (example.sol#15)\n",
+                        "severity": "Medium"
+                    },
+                    {
+                        "name": "Block timestamp",
+                        "description": "GuessTheRandomNumber.guess(uint256) (example.sol#8-19) uses timestamp for comparisons\n\tDangerous comparisons:\n\t- _guess == answer (example.sol#15)\n",
+                        "severity": "Low"
+                    }
+                ],
+                "detail": {
+                    "success": true,
+                    "error": null,
+                    "results": {
+                        "detectors": [
+                            {
+                                "elements": [
+                                    {
+                                        "type": "function",
+                                        "name": "guess",
+                                        "source_mapping": {
+                                            "ending_column": 6,
+                                            "filename_absolute": "/share/result/contracts724/example.sol",
+                                            "filename_relative": "example.sol",
+                                            "filename_short": "example.sol",
+                                            "is_dependency": false,
+                                            "length": 364,
+                                            "lines": [
+                                                8,
+                                                9,
+                                                10,
+                                                11,
+                                                12,
+                                                13,
+                                                14,
+                                                15,
+                                                16,
+                                                17,
+                                                18,
+                                                19
+                                            ],
+                                            "start": 125,
+                                            "starting_column": 5
+                                        },
+                                        "type_specific_fields": {
+                                            "parent": {
+                                                "name": "GuessTheRandomNumber",
+                                                "source_mapping": {
+                                                    "ending_column": 2,
+                                                    "filename_absolute": "/share/result/contracts724/example.sol",
+                                                    "filename_relative": "example.sol",
+                                                    "filename_short": "example.sol",
+                                                    "is_dependency": false,
+                                                    "length": 432,
+                                                    "lines": [
+                                                        5,
+                                                        6,
+                                                        7,
+                                                        8,
+                                                        9,
+                                                        10,
+                                                        11,
+                                                        12,
+                                                        13,
+                                                        14,
+                                                        15,
+                                                        16,
+                                                        17,
+                                                        18,
+                                                        19,
+                                                        20
+                                                    ],
+                                                    "start": 59,
+                                                    "starting_column": 1
+                                                },
+                                                "type": "contract"
+                                            },
+                                            "signature": "guess(uint256)"
+                                        }
+                                    },
+                                    {
+                                        "type": "node",
+                                        "name": "(sent) = msg.sender.call{value: 1000000000000000000}()",
+                                        "source_mapping": {
+                                            "ending_column": 63,
+                                            "filename_absolute": "/share/result/contracts724/example.sol",
+                                            "filename_relative": "example.sol",
+                                            "filename_short": "example.sol",
+                                            "is_dependency": false,
+                                            "length": 50,
+                                            "lines": [
+                                                16
+                                            ],
+                                            "start": 371,
+                                            "starting_column": 13
+                                        },
+                                        "type_specific_fields": {
+                                            "parent": {
+                                                "name": "guess",
+                                                "source_mapping": {
+                                                    "ending_column": 6,
+                                                    "filename_absolute": "/share/result/contracts724/example.sol",
+                                                    "filename_relative": "example.sol",
+                                                    "filename_short": "example.sol",
+                                                    "is_dependency": false,
+                                                    "length": 364,
+                                                    "lines": [
+                                                        8,
+                                                        9,
+                                                        10,
+                                                        11,
+                                                        12,
+                                                        13,
+                                                        14,
+                                                        15,
+                                                        16,
+                                                        17,
+                                                        18,
+                                                        19
+                                                    ],
+                                                    "start": 125,
+                                                    "starting_column": 5
+                                                },
+                                                "type": "function",
+                                                "type_specific_fields": {
+                                                    "parent": {
+                                                        "name": "GuessTheRandomNumber",
+                                                        "source_mapping": {
+                                                            "ending_column": 2,
+                                                            "filename_absolute": "/share/result/contracts724/example.sol",
+                                                            "filename_relative": "example.sol",
+                                                            "filename_short": "example.sol",
+                                                            "is_dependency": false,
+                                                            "length": 432,
+                                                            "lines": [
+                                                                5,
+                                                                6,
+                                                                7,
+                                                                8,
+                                                                9,
+                                                                10,
+                                                                11,
+                                                                12,
+                                                                13,
+                                                                14,
+                                                                15,
+                                                                16,
+                                                                17,
+                                                                18,
+                                                                19,
+                                                                20
+                                                            ],
+                                                            "start": 59,
+                                                            "starting_column": 1
+                                                        },
+                                                        "type": "contract"
+                                                    },
+                                                    "signature": "guess(uint256)"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ],
+                                "description": "GuessTheRandomNumber.guess(uint256) (example.sol#8-19) sends eth to arbitrary user\n\tDangerous calls:\n\t- (sent) = msg.sender.call{value: 1000000000000000000}() (example.sol#16)\n",
+                                "markdown": "[GuessTheRandomNumber.guess(uint256)](example.sol#L8-L19) sends eth to arbitrary user\n\tDangerous calls:\n\t- [(sent) = msg.sender.call{value: 1000000000000000000}()](example.sol#L16)\n",
+                                "first_markdown_element": "example.sol#L8-L19",
+                                "id": "78c0d712648ef61af99ec6f382f5596e35fdfe144da2347ea948bb512f400397",
+                                "check": "arbitrary-send-eth",
+                                "impact": "High",
+                                "confidence": "Medium"
+                            },
+                            {
+                                "elements": [
+                                    {
+                                        "type": "function",
+                                        "name": "guess",
+                                        "source_mapping": {
+                                            "ending_column": 6,
+                                            "filename_absolute": "/share/result/contracts724/example.sol",
+                                            "filename_relative": "example.sol",
+                                            "filename_short": "example.sol",
+                                            "is_dependency": false,
+                                            "length": 364,
+                                            "lines": [
+                                                8,
+                                                9,
+                                                10,
+                                                11,
+                                                12,
+                                                13,
+                                                14,
+                                                15,
+                                                16,
+                                                17,
+                                                18,
+                                                19
+                                            ],
+                                            "start": 125,
+                                            "starting_column": 5
+                                        },
+                                        "type_specific_fields": {
+                                            "parent": {
+                                                "name": "GuessTheRandomNumber",
+                                                "source_mapping": {
+                                                    "ending_column": 2,
+                                                    "filename_absolute": "/share/result/contracts724/example.sol",
+                                                    "filename_relative": "example.sol",
+                                                    "filename_short": "example.sol",
+                                                    "is_dependency": false,
+                                                    "length": 432,
+                                                    "lines": [
+                                                        5,
+                                                        6,
+                                                        7,
+                                                        8,
+                                                        9,
+                                                        10,
+                                                        11,
+                                                        12,
+                                                        13,
+                                                        14,
+                                                        15,
+                                                        16,
+                                                        17,
+                                                        18,
+                                                        19,
+                                                        20
+                                                    ],
+                                                    "start": 59,
+                                                    "starting_column": 1
+                                                },
+                                                "type": "contract"
+                                            },
+                                            "signature": "guess(uint256)"
+                                        }
+                                    },
+                                    {
+                                        "type": "node",
+                                        "name": "_guess == answer",
+                                        "source_mapping": {
+                                            "ending_column": 29,
+                                            "filename_absolute": "/share/result/contracts724/example.sol",
+                                            "filename_relative": "example.sol",
+                                            "filename_short": "example.sol",
+                                            "is_dependency": false,
+                                            "length": 16,
+                                            "lines": [
+                                                15
+                                            ],
+                                            "start": 339,
+                                            "starting_column": 13
+                                        },
+                                        "type_specific_fields": {
+                                            "parent": {
+                                                "name": "guess",
+                                                "source_mapping": {
+                                                    "ending_column": 6,
+                                                    "filename_absolute": "/share/result/contracts724/example.sol",
+                                                    "filename_relative": "example.sol",
+                                                    "filename_short": "example.sol",
+                                                    "is_dependency": false,
+                                                    "length": 364,
+                                                    "lines": [
+                                                        8,
+                                                        9,
+                                                        10,
+                                                        11,
+                                                        12,
+                                                        13,
+                                                        14,
+                                                        15,
+                                                        16,
+                                                        17,
+                                                        18,
+                                                        19
+                                                    ],
+                                                    "start": 125,
+                                                    "starting_column": 5
+                                                },
+                                                "type": "function",
+                                                "type_specific_fields": {
+                                                    "parent": {
+                                                        "name": "GuessTheRandomNumber",
+                                                        "source_mapping": {
+                                                            "ending_column": 2,
+                                                            "filename_absolute": "/share/result/contracts724/example.sol",
+                                                            "filename_relative": "example.sol",
+                                                            "filename_short": "example.sol",
+                                                            "is_dependency": false,
+                                                            "length": 432,
+                                                            "lines": [
+                                                                5,
+                                                                6,
+                                                                7,
+                                                                8,
+                                                                9,
+                                                                10,
+                                                                11,
+                                                                12,
+                                                                13,
+                                                                14,
+                                                                15,
+                                                                16,
+                                                                17,
+                                                                18,
+                                                                19,
+                                                                20
+                                                            ],
+                                                            "start": 59,
+                                                            "starting_column": 1
+                                                        },
+                                                        "type": "contract"
+                                                    },
+                                                    "signature": "guess(uint256)"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ],
+                                "description": "GuessTheRandomNumber.guess(uint256) (example.sol#8-19) uses a dangerous strict equality:\n\t- _guess == answer (example.sol#15)\n",
+                                "markdown": "[GuessTheRandomNumber.guess(uint256)](example.sol#L8-L19) uses a dangerous strict equality:\n\t- [_guess == answer](example.sol#L15)\n",
+                                "first_markdown_element": "example.sol#L8-L19",
+                                "id": "358755b5dbb89d1f3204449c701c6a39bee8457ba3655375f463ecd483ea88e3",
+                                "check": "incorrect-equality",
+                                "impact": "Medium",
+                                "confidence": "High"
+                            },
+                            {
+                                "elements": [
+                                    {
+                                        "type": "function",
+                                        "name": "guess",
+                                        "source_mapping": {
+                                            "ending_column": 6,
+                                            "filename_absolute": "/share/result/contracts724/example.sol",
+                                            "filename_relative": "example.sol",
+                                            "filename_short": "example.sol",
+                                            "is_dependency": false,
+                                            "length": 364,
+                                            "lines": [
+                                                8,
+                                                9,
+                                                10,
+                                                11,
+                                                12,
+                                                13,
+                                                14,
+                                                15,
+                                                16,
+                                                17,
+                                                18,
+                                                19
+                                            ],
+                                            "start": 125,
+                                            "starting_column": 5
+                                        },
+                                        "type_specific_fields": {
+                                            "parent": {
+                                                "name": "GuessTheRandomNumber",
+                                                "source_mapping": {
+                                                    "ending_column": 2,
+                                                    "filename_absolute": "/share/result/contracts724/example.sol",
+                                                    "filename_relative": "example.sol",
+                                                    "filename_short": "example.sol",
+                                                    "is_dependency": false,
+                                                    "length": 432,
+                                                    "lines": [
+                                                        5,
+                                                        6,
+                                                        7,
+                                                        8,
+                                                        9,
+                                                        10,
+                                                        11,
+                                                        12,
+                                                        13,
+                                                        14,
+                                                        15,
+                                                        16,
+                                                        17,
+                                                        18,
+                                                        19,
+                                                        20
+                                                    ],
+                                                    "start": 59,
+                                                    "starting_column": 1
+                                                },
+                                                "type": "contract"
+                                            },
+                                            "signature": "guess(uint256)"
+                                        }
+                                    },
+                                    {
+                                        "type": "node",
+                                        "name": "_guess == answer",
+                                        "source_mapping": {
+                                            "ending_column": 29,
+                                            "filename_absolute": "/share/result/contracts724/example.sol",
+                                            "filename_relative": "example.sol",
+                                            "filename_short": "example.sol",
+                                            "is_dependency": false,
+                                            "length": 16,
+                                            "lines": [
+                                                15
+                                            ],
+                                            "start": 339,
+                                            "starting_column": 13
+                                        },
+                                        "type_specific_fields": {
+                                            "parent": {
+                                                "name": "guess",
+                                                "source_mapping": {
+                                                    "ending_column": 6,
+                                                    "filename_absolute": "/share/result/contracts724/example.sol",
+                                                    "filename_relative": "example.sol",
+                                                    "filename_short": "example.sol",
+                                                    "is_dependency": false,
+                                                    "length": 364,
+                                                    "lines": [
+                                                        8,
+                                                        9,
+                                                        10,
+                                                        11,
+                                                        12,
+                                                        13,
+                                                        14,
+                                                        15,
+                                                        16,
+                                                        17,
+                                                        18,
+                                                        19
+                                                    ],
+                                                    "start": 125,
+                                                    "starting_column": 5
+                                                },
+                                                "type": "function",
+                                                "type_specific_fields": {
+                                                    "parent": {
+                                                        "name": "GuessTheRandomNumber",
+                                                        "source_mapping": {
+                                                            "ending_column": 2,
+                                                            "filename_absolute": "/share/result/contracts724/example.sol",
+                                                            "filename_relative": "example.sol",
+                                                            "filename_short": "example.sol",
+                                                            "is_dependency": false,
+                                                            "length": 432,
+                                                            "lines": [
+                                                                5,
+                                                                6,
+                                                                7,
+                                                                8,
+                                                                9,
+                                                                10,
+                                                                11,
+                                                                12,
+                                                                13,
+                                                                14,
+                                                                15,
+                                                                16,
+                                                                17,
+                                                                18,
+                                                                19,
+                                                                20
+                                                            ],
+                                                            "start": 59,
+                                                            "starting_column": 1
+                                                        },
+                                                        "type": "contract"
+                                                    },
+                                                    "signature": "guess(uint256)"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ],
+                                "description": "GuessTheRandomNumber.guess(uint256) (example.sol#8-19) uses timestamp for comparisons\n\tDangerous comparisons:\n\t- _guess == answer (example.sol#15)\n",
+                                "markdown": "[GuessTheRandomNumber.guess(uint256)](example.sol#L8-L19) uses timestamp for comparisons\n\tDangerous comparisons:\n\t- [_guess == answer](example.sol#L15)\n",
+                                "first_markdown_element": "example.sol#L8-L19",
+                                "id": "dd24690a736c98ad344fb3416f2c6e7f0e6a65c25ec3636801707ceb48e29ba6",
+                                "check": "timestamp",
+                                "impact": "Low",
+                                "confidence": "Medium"
+                            },
+                            {
+                                "elements": [
+                                    {
+                                        "type": "pragma",
+                                        "name": "^0.8.22",
+                                        "source_mapping": {
+                                            "ending_column": 25,
+                                            "filename_absolute": "/share/result/contracts724/example.sol",
+                                            "filename_relative": "example.sol",
+                                            "filename_short": "example.sol",
+                                            "is_dependency": false,
+                                            "length": 24,
+                                            "lines": [
+                                                2
+                                            ],
+                                            "start": 32,
+                                            "starting_column": 1
+                                        },
+                                        "type_specific_fields": {
+                                            "directive": [
+                                                "solidity",
+                                                "^",
+                                                "0.8",
+                                                ".22"
+                                            ]
+                                        }
+                                    }
+                                ],
+                                "description": "Pragma version^0.8.22 (example.sol#2) necessitates a version too recent to be trusted. Consider deploying with 0.8.18.\n",
+                                "markdown": "Pragma version[^0.8.22](example.sol#L2) necessitates a version too recent to be trusted. Consider deploying with 0.8.18.\n",
+                                "first_markdown_element": "example.sol#L2",
+                                "id": "106b756b77ac15951aea326f44d3b136eef6ae66174c83cd5f92cec57f8ed7e2",
+                                "check": "solc-version",
+                                "impact": "Informational",
+                                "confidence": "High"
+                            },
+                            {
+                                "elements": [],
+                                "description": "solc-0.8.22 is not recommended for deployment\n",
+                                "markdown": "solc-0.8.22 is not recommended for deployment\n",
+                                "first_markdown_element": "",
+                                "id": "2584eed3f1a6c37118da98709458a611a90fc5486a349e6fad8b5af8d201ac98",
+                                "check": "solc-version",
+                                "impact": "Informational",
+                                "confidence": "High"
+                            },
+                            {
+                                "elements": [
+                                    {
+                                        "type": "function",
+                                        "name": "guess",
+                                        "source_mapping": {
+                                            "ending_column": 6,
+                                            "filename_absolute": "/share/result/contracts724/example.sol",
+                                            "filename_relative": "example.sol",
+                                            "filename_short": "example.sol",
+                                            "is_dependency": false,
+                                            "length": 364,
+                                            "lines": [
+                                                8,
+                                                9,
+                                                10,
+                                                11,
+                                                12,
+                                                13,
+                                                14,
+                                                15,
+                                                16,
+                                                17,
+                                                18,
+                                                19
+                                            ],
+                                            "start": 125,
+                                            "starting_column": 5
+                                        },
+                                        "type_specific_fields": {
+                                            "parent": {
+                                                "name": "GuessTheRandomNumber",
+                                                "source_mapping": {
+                                                    "ending_column": 2,
+                                                    "filename_absolute": "/share/result/contracts724/example.sol",
+                                                    "filename_relative": "example.sol",
+                                                    "filename_short": "example.sol",
+                                                    "is_dependency": false,
+                                                    "length": 432,
+                                                    "lines": [
+                                                        5,
+                                                        6,
+                                                        7,
+                                                        8,
+                                                        9,
+                                                        10,
+                                                        11,
+                                                        12,
+                                                        13,
+                                                        14,
+                                                        15,
+                                                        16,
+                                                        17,
+                                                        18,
+                                                        19,
+                                                        20
+                                                    ],
+                                                    "start": 59,
+                                                    "starting_column": 1
+                                                },
+                                                "type": "contract"
+                                            },
+                                            "signature": "guess(uint256)"
+                                        }
+                                    },
+                                    {
+                                        "type": "node",
+                                        "name": "(sent) = msg.sender.call{value: 1000000000000000000}()",
+                                        "source_mapping": {
+                                            "ending_column": 63,
+                                            "filename_absolute": "/share/result/contracts724/example.sol",
+                                            "filename_relative": "example.sol",
+                                            "filename_short": "example.sol",
+                                            "is_dependency": false,
+                                            "length": 50,
+                                            "lines": [
+                                                16
+                                            ],
+                                            "start": 371,
+                                            "starting_column": 13
+                                        },
+                                        "type_specific_fields": {
+                                            "parent": {
+                                                "name": "guess",
+                                                "source_mapping": {
+                                                    "ending_column": 6,
+                                                    "filename_absolute": "/share/result/contracts724/example.sol",
+                                                    "filename_relative": "example.sol",
+                                                    "filename_short": "example.sol",
+                                                    "is_dependency": false,
+                                                    "length": 364,
+                                                    "lines": [
+                                                        8,
+                                                        9,
+                                                        10,
+                                                        11,
+                                                        12,
+                                                        13,
+                                                        14,
+                                                        15,
+                                                        16,
+                                                        17,
+                                                        18,
+                                                        19
+                                                    ],
+                                                    "start": 125,
+                                                    "starting_column": 5
+                                                },
+                                                "type": "function",
+                                                "type_specific_fields": {
+                                                    "parent": {
+                                                        "name": "GuessTheRandomNumber",
+                                                        "source_mapping": {
+                                                            "ending_column": 2,
+                                                            "filename_absolute": "/share/result/contracts724/example.sol",
+                                                            "filename_relative": "example.sol",
+                                                            "filename_short": "example.sol",
+                                                            "is_dependency": false,
+                                                            "length": 432,
+                                                            "lines": [
+                                                                5,
+                                                                6,
+                                                                7,
+                                                                8,
+                                                                9,
+                                                                10,
+                                                                11,
+                                                                12,
+                                                                13,
+                                                                14,
+                                                                15,
+                                                                16,
+                                                                17,
+                                                                18,
+                                                                19,
+                                                                20
+                                                            ],
+                                                            "start": 59,
+                                                            "starting_column": 1
+                                                        },
+                                                        "type": "contract"
+                                                    },
+                                                    "signature": "guess(uint256)"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ],
+                                "description": "Low level call in GuessTheRandomNumber.guess(uint256) (example.sol#8-19):\n\t- (sent) = msg.sender.call{value: 1000000000000000000}() (example.sol#16)\n",
+                                "markdown": "Low level call in [GuessTheRandomNumber.guess(uint256)](example.sol#L8-L19):\n\t- [(sent) = msg.sender.call{value: 1000000000000000000}()](example.sol#L16)\n",
+                                "first_markdown_element": "example.sol#L8-L19",
+                                "id": "adf2416631d4972c6ce7fafb359cc13f44e5e5f421544986ce9964063f5a17c9",
+                                "check": "low-level-calls",
+                                "impact": "Informational",
+                                "confidence": "High"
+                            },
+                            {
+                                "elements": [
+                                    {
+                                        "type": "variable",
+                                        "name": "_guess",
+                                        "source_mapping": {
+                                            "ending_column": 34,
+                                            "filename_absolute": "/share/result/contracts724/example.sol",
+                                            "filename_relative": "example.sol",
+                                            "filename_short": "example.sol",
+                                            "is_dependency": false,
+                                            "length": 14,
+                                            "lines": [
+                                                8
+                                            ],
+                                            "start": 140,
+                                            "starting_column": 20
+                                        },
+                                        "type_specific_fields": {
+                                            "parent": {
+                                                "name": "guess",
+                                                "source_mapping": {
+                                                    "ending_column": 6,
+                                                    "filename_absolute": "/share/result/contracts724/example.sol",
+                                                    "filename_relative": "example.sol",
+                                                    "filename_short": "example.sol",
+                                                    "is_dependency": false,
+                                                    "length": 364,
+                                                    "lines": [
+                                                        8,
+                                                        9,
+                                                        10,
+                                                        11,
+                                                        12,
+                                                        13,
+                                                        14,
+                                                        15,
+                                                        16,
+                                                        17,
+                                                        18,
+                                                        19
+                                                    ],
+                                                    "start": 125,
+                                                    "starting_column": 5
+                                                },
+                                                "type": "function",
+                                                "type_specific_fields": {
+                                                    "parent": {
+                                                        "name": "GuessTheRandomNumber",
+                                                        "source_mapping": {
+                                                            "ending_column": 2,
+                                                            "filename_absolute": "/share/result/contracts724/example.sol",
+                                                            "filename_relative": "example.sol",
+                                                            "filename_short": "example.sol",
+                                                            "is_dependency": false,
+                                                            "length": 432,
+                                                            "lines": [
+                                                                5,
+                                                                6,
+                                                                7,
+                                                                8,
+                                                                9,
+                                                                10,
+                                                                11,
+                                                                12,
+                                                                13,
+                                                                14,
+                                                                15,
+                                                                16,
+                                                                17,
+                                                                18,
+                                                                19,
+                                                                20
+                                                            ],
+                                                            "start": 59,
+                                                            "starting_column": 1
+                                                        },
+                                                        "type": "contract"
+                                                    },
+                                                    "signature": "guess(uint256)"
+                                                }
+                                            }
+                                        }
+                                    }
+                                ],
+                                "description": "Parameter GuessTheRandomNumber.guess(uint256)._guess (example.sol#8) is not in mixedCase\n",
+                                "markdown": "Parameter [GuessTheRandomNumber.guess(uint256)._guess](example.sol#L8) is not in mixedCase\n",
+                                "first_markdown_element": "example.sol#L8",
+                                "id": "f42e5d92fe550e3f01c99b9348df2d6510b616a5660d9631f6b3eeacca208d7e",
+                                "check": "naming-convention",
+                                "impact": "Informational",
+                                "confidence": "High"
+                            }
+                        ]
+                    }
+                },
+                "time_elapsed": 3.6512435
+            },
+            {
+                "tool_name": "solhint",
+                "no_error": 4,
+                "sum_up": [
+                    {
+                        "name": "func-visibility",
+                        "description": "Explicitly mark visibility in function (Set ignoreConstructors to true if using solidity >=0.7.0)",
+                        "severity": "Low"
+                    },
+                    {
+                        "name": "no-empty-blocks",
+                        "description": "Code contains empty blocks",
+                        "severity": "Low"
+                    },
+                    {
+                        "name": "not-rely-on-time",
+                        "description": "Avoid making time-based decisions in your business logic",
+                        "severity": "Low"
+                    },
+                    {
+                        "name": "gas-custom-errors",
+                        "description": "GC: Use Custom Errors instead of require statements",
+                        "severity": "Low"
+                    }
+                ],
+                "detail": [
+                    {
+                        "issues": {
+                            "line": 6,
+                            "column": 5,
+                            "severity": "Error",
+                            "message": "Explicitly mark visibility in function (Set ignoreConstructors to true if using solidity >=0.7.0)",
+                            "ruleId": "func-visibility",
+                            "filePath": "/share/result/contracts724/example.sol"
+                        }
+                    },
+                    {
+                        "issues": {
+                            "line": 6,
+                            "column": 27,
+                            "severity": "Warning",
+                            "message": "Code contains empty blocks",
+                            "ruleId": "no-empty-blocks",
+                            "filePath": "/share/result/contracts724/example.sol"
+                        }
+                    },
+                    {
+                        "issues": {
+                            "line": 11,
+                            "column": 63,
+                            "severity": "Error",
+                            "message": "Avoid making time-based decisions in your business logic",
+                            "ruleId": "not-rely-on-time",
+                            "filePath": "/share/result/contracts724/example.sol"
+                        }
+                    },
+                    {
+                        "issues": {
+                            "line": 17,
+                            "column": 13,
+                            "severity": "Warning",
+                            "message": "GC: Use Custom Errors instead of require statements",
+                            "ruleId": "gas-custom-errors",
+                            "filePath": "/share/result/contracts724/example.sol"
+                        }
+                    },
+                    {
+                        "issues": null,
+                        "conclusion": {
+                            "conclusion": "4 problem/s (2 error/s, 2 warning/s)"
+                        }
+                    }
+                ],
+                "time_elapsed": 5.4543182
+            },
+            {
+                "tool_name": "honeybadger",
+                "no_error": 0,
+                "sum_up": [
+                    {
+                        "name": "HONEYBADGER ERROR",
+                        "description": "Honeybadger fail to analyze contract",
+                        "severity": ""
+                    }
+                ],
+                "detail": {
+                    "execution_paths": "",
+                    "money_flow": false,
+                    "hidden_state_update": null,
+                    "balance_disorder": null,
+                    "execution_time": "",
+                    "hidden_transfer": null,
+                    "attack_methods": null,
+                    "cashout_methods": null,
+                    "evm_code_coverage": "",
+                    "straw_man_contract": null,
+                    "skip_empty_string_literal": null,
+                    "inheritance_disorder": null,
+                    "uninitialised_struct": null,
+                    "timeout": null,
+                    "dead_code": null,
+                    "type_deduction_overflow": null
+                },
+                "time_elapsed": 1.9911265999999999
+            }
+        ]
+    }
+}

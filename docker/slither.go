@@ -7,10 +7,40 @@ import (
 	"getContractDeployment/helper"
 	"getContractDeployment/models"
 	"os"
+	"time"
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/client"
 )
+
+func RunSlitherAnalysisWithTimeOut(file string, contractFolder string, remappingJSON bool) (models.SlitherResultDetail, error) {
+	// Create a context with timeout
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Minute)
+	defer cancel()
+
+	// Channel to receive the result
+	resultChan := make(chan struct {
+		result models.SlitherResultDetail
+		err    error
+	}, 1)
+
+	// Run the fetchMythrilResult function in a separate goroutine
+	go func() {
+		result, err := RunSlitherAnalysis(file, contractFolder, remappingJSON)
+		resultChan <- struct {
+			result models.SlitherResultDetail
+			err    error
+		}{result, err}
+	}()
+
+	// Use a select statement to wait for either the result or the context timeout
+	select {
+	case res := <-resultChan:
+		return res.result, res.err
+	case <-ctx.Done():
+		return models.SlitherResultDetail{}, fmt.Errorf("Slither time out")
+	}
+}
 
 func RunSlitherAnalysis(file string, contractFolder string, remappingJSON bool) (models.SlitherResultDetail, error) { //(string, error)
 	ctx := context.Background()
@@ -32,16 +62,6 @@ func RunSlitherAnalysis(file string, contractFolder string, remappingJSON bool) 
 	}
 
 	helper.WriteJSONToFile(string(jsonData), "slither.json")
-	// result = helper.PreprocessJSON(result)
-	// helper.WriteFile(result, "wtf.txt")
-	
-
-	// var returnResult models.SlitherResultDetail
-	// err = json.Unmarshal([]byte(result), &returnResult)
-	// if err != nil {
-	// 	helper.WriteFile(result, "wtf.txt")
-	// 	return models.SlitherResultDetail{}, helper.MakeError(err, "(slither) json unmarshal") 
-	// }
 
 	if !result.Success{
 		return models.SlitherResultDetail{
@@ -91,29 +111,29 @@ func runSlitherContainer(ctx context.Context, cli *client.Client, file string, c
 
 	var returnResult models.SlitherResultDetail
 	if err := json.Unmarshal(result, &returnResult); err != nil {
-		return models.SlitherResultDetail{}, helper.MakeError(err, "(slither) json unmarshal")
+		return models.SlitherResultDetail{}, err
 	}
-
-	// decoder := json.NewDecoder(execResp.Reader)
-	// err = decoder.Decode(&returnResult)
-	// if err != nil {
-	// 	return models.SlitherResultDetail{}, helper.MakeError(err, "(slither) decode result")
-	// }
-
-	// result = helper.RemoveAfterFirstChar(result,"{")
 
 	return returnResult, nil
 }
 
 
-func GetSlitherSumUp(detail models.SlitherResultDetail) []models.SumUp{
+func GetSlitherSumUp(detail models.SlitherResultDetail, err error) []models.SumUp{
 	var sumups []models.SumUp
+	if err != nil {
+		sumups = append(sumups, models.SumUp{
+			Name: "SLITHER ERROR",
+			Description: "Slither fail to analyze contract",
+			Severity: "",
+		})
+		return sumups
+	}
 	for _, issue := range detail.Results.Detectors{
 		if issue.Impact == "informaltional" || issue.Impact == "Informational" || issue.Impact == "Optimization" || issue.Impact == "optimization"{
 			continue
 		}
 		sumup := models.SumUp{
-			Name: SlitherVulnaClass[issue.ID],
+			Name: SlitherVulnaClass[issue.Check],
 			Description: issue.Description,
 			Severity: issue.Impact,
 		}

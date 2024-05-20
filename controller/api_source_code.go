@@ -58,21 +58,6 @@ func getContractSourceCode(chainID int, address string) (models.Contract, error)
 		return models.Contract{}, err
 	}
 
-	// contentData := contractData["content"].(map[string]interface{})
-	// noContract := len(contentData)
-	// mainContract := contractData["main_contract"].(string)
-	// var allContent []models.ContractContent
-	// for name, content := range contentData {
-	// 	allContent = append(allContent, models.ContractContent{ContractName: name, ContractContent: content.(string)})
-	// }
-
-	// result = models.Contract{
-	// 	Address:      address,
-	// 	ChainID:      chainID,
-	// 	NoContract:   noContract,
-	// 	MainContract: mainContract,
-	// 	Content:      allContent,
-	// }
 	err = saveSourceCodeToDB(ctx, col, &result)
 	if err != nil {
 		return models.Contract{}, err

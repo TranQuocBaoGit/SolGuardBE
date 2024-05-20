@@ -9,14 +9,17 @@ import (
 
 type FileAnalysisFormData struct {
 	File  *multipart.FileHeader `form:"file"`
-	Tools []string 				`form:"tools"`
+	// Tools []string 				`form:"tools"`
+}
+
+type User struct {
+	WalletAddress string   `form:"wallet_address"`
 }
 
 type AddressAnalysisFormData struct {
 	Address string   `form:"address"`
 	ChainID int      `form:"chainid"`
-	SumUp 	bool	 `form:"sumup"`
-	Tools   []string `form:"tools"`
+	WalletAddress string `form:"wallet_address"`
 }
 
 type AddressFormData struct {

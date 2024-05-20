@@ -1,5 +1,11 @@
-create contracts579
-begin analysis
-pass get analysis from DB
+
 pass mythril
 pass slither
+pass solhint
+error type "(honeybadger) empty result": <nil>
+pass honeybadger
+pass mythril
+pass slither
+pass solhint
+error type "(honeybadger) empty result": <nil>
+pass honeybadger

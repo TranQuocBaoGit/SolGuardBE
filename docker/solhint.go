@@ -1,127 +1,164 @@
 package docker
 
-// package docker
+import (
+	"context"
+	"encoding/json"
+	"fmt"
+	"getContractDeployment/helper"
+	"getContractDeployment/models"
+	"os"
+	"time"
 
-// import (
-// 	"context"
-// 	"encoding/json"
-// 	"fmt"
-// 	"getContractDeployment/helper"
-// 	"getContractDeployment/models"
-// 	"os"
+	"github.com/docker/docker/api/types"
+	"github.com/docker/docker/client"
+)
 
-// 	"github.com/docker/docker/api/types"
-// 	"github.com/docker/docker/client"
-// )
+func RunSolHintAnalysisWithTimeOut(file string, contractFolder string, remappingJSON bool) (models.SolhintResultDetail, error) {
+	// Create a context with timeout
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Minute)
+	defer cancel()
 
-// func RunSolhintAnalysis(file string, contractFolder string, remappingJSON bool) (models.SolhintResultDetail, error) { //(string, error)
-// 	ctx := context.Background()
+	// Channel to receive the result
+	resultChan := make(chan struct {
+		result models.SolhintResultDetail
+		err    error
+	}, 1)
 
-// 	// Create a Docker client
-// 	cli, err := client.NewClientWithOpts(client.FromEnv)
-// 	if err != nil{
-// 		return models.SolhintResultDetail{}, helper.MakeError(err, "(solhint) new docker client")
-// 	}
+	// Run the fetchMythrilResult function in a separate goroutine
+	go func() {
+		result, err := RunSolhintAnalysis(file, contractFolder, remappingJSON)
+		resultChan <- struct {
+			result models.SolhintResultDetail
+			err    error
+		}{result, err}
+	}()
 
-// 	result, err := runSolhintContainer(ctx, cli, file, contractFolder, remappingJSON)
-// 	if err != nil{
-// 		return models.SolhintResultDetail{}, err
-// 	}
+	// Use a select statement to wait for either the result or the context timeout
+	select {
+	case res := <-resultChan:
+		return res.result, res.err
+	case <-ctx.Done():
+		return models.SolhintResultDetail{}, fmt.Errorf("Solhint time out")
+	}
+}
 
-// 	jsonData, err := json.Marshal(result)
-// 	if err != nil {
-// 		return models.SolhintResultDetail{}, err
-// 	}
+func RunSolhintAnalysis(file string, contractFolder string, remappingJSON bool) (models.SolhintResultDetail, error) { //(string, error)
+	ctx := context.Background()
 
-// 	helper.WriteJSONToFile(string(jsonData), "solhint.json")
-// 	// result = helper.PreprocessJSON(result)
-// 	// helper.WriteFile(result, "wtf.txt")
-	
+	// Create a Docker client
+	cli, err := client.NewClientWithOpts(client.FromEnv)
+	if err != nil{
+		return models.SolhintResultDetail{}, helper.MakeError(err, "(solhint) new docker client")
+	}
 
-// 	// var returnResult models.SlitherResultDetail
-// 	// err = json.Unmarshal([]byte(result), &returnResult)
-// 	// if err != nil {
-// 	// 	helper.WriteFile(result, "wtf.txt")
-// 	// 	return models.SlitherResultDetail{}, helper.MakeError(err, "(slither) json unmarshal") 
-// 	// }
+	result, err := runSolhintContainer(ctx, cli, file, contractFolder, remappingJSON)
+	if err != nil{
+		return models.SolhintResultDetail{}, err
+	}
 
-// 	if !result.Success{
-// 		return models.SolhintResultDetail{
-// 			Error: helper.MakeError(err, "(slither) failed to analyze contract"),
-// 			Results: models.SlitherDetectorDetail{},
-// 			Success: false,
-// 		}, nil
-// 	}
+	jsonData, err := json.Marshal(result)
+	if err != nil {
+		return models.SolhintResultDetail{}, err
+	}
 
-// 	return result, nil
-// }
+	helper.WriteJSONToFile(string(jsonData), "solhint.json")
 
-// func runSolhintContainer(ctx context.Context, cli *client.Client, file string, contractFolder string, remappingJSON bool) (models.SolhintResultDetail, error) {
+	return result, nil
+}
 
-// 	currentDir, err := os.Getwd()
-// 	if err != nil {
-// 		return models.SolhintResultDetail{}, helper.MakeError(err, "(solhint) get directory")
-// 	}
+func runSolhintContainer(ctx context.Context, cli *client.Client, file string, contractFolder string, remappingJSON bool) (models.SolhintResultDetail, error) {
 
-// 	hostConfig := createHostConfig(currentDir, "/share")
+	currentDir, err := os.Getwd()
+	if err != nil {
+		return models.SolhintResultDetail{}, helper.MakeError(err, "(solhint) get directory")
+	}
 
-// 	resp, err := createContainer(ctx, cli, "solhint", true, nil, &hostConfig, "")
-// 	if err != nil {
-// 		return models.SolhintResultDetail{}, helper.MakeError(err, "(solhint) create container")
-// 	}
-// 	defer func(){
-// 		err := cli.ContainerRemove(context.Background(), resp.ID, types.ContainerRemoveOptions{Force: true})
-// 		if err != nil {
-// 			panic(err)
-// 		}
-// 	}()
+	hostConfig := createHostConfig(currentDir, "/share")
 
-// 	err = cli.ContainerStart(ctx, resp.ID, types.ContainerStartOptions{})
-// 	if err != nil {
-// 		return models.SolhintResultDetail{}, helper.MakeError(err, "(solhint) container start")
-// 	}
+	resp, err := createContainer(ctx, cli, "solhint", true, nil, &hostConfig, "")
+	if err != nil {
+		return models.SolhintResultDetail{}, helper.MakeError(err, "(solhint) create container")
+	}
+	defer func(){
+		err := cli.ContainerRemove(context.Background(), resp.ID, types.ContainerRemoveOptions{Force: true})
+		if err != nil {
+			panic(err)
+		}
+	}()
 
-// 	var setupCmd []string = []string{"sh", "-c", fmt.Sprintf("solhint --init &&  && sed -i 's/\"extends\": \"solhint:default\"/\"extends\": \"solhint:recommended\"/' .solhint.json")}
-// 	// fmt.Println(cmd)
+	err = cli.ContainerStart(ctx, resp.ID, types.ContainerStartOptions{})
+	if err != nil {
+		return models.SolhintResultDetail{}, helper.MakeError(err, "(solhint) container start")
+	}
 
-// 	_, err = performExec(cli, resp, setupCmd)
-// 	if err != nil {
-// 		return models.SolhintResultDetail{}, helper.MakeError(err, "(solhint) perform setup execution")
-// 	}
+	newConfigFile := `"extends": "solhint:recommended","plugins": [],"rules": {"avoid-call-value": "warn","avoid-low-level-calls": "warn","avoid-throw": "warn","avoid-tx-origin": "error","check-send-result": "warn","func-visibility": "error","multiple-sends": "off","no-complex-fallback": "off","no-inline-assembly": "warn","not-rely-on-block-hash": "error","not-rely-on-time": "error","reentrancy": "error","state-visibility": "warn","avoid-suicide": "error","avoid-sha3": "warn"}`
 
-// 	var cmd []string = []string{"sh", "-c", fmt.Sprintf("solhint /share/%s/%s", contractFolder, file)}
-// 	result, err := performExec(cli, resp, cmd)
-// 	if err != nil {
-// 		return models.SolhintResultDetail{}, helper.MakeError(err, "(solhint) perform analyze execution")
-// 	}
+	var setupCmd []string = []string{"sh", "-c", fmt.Sprintf(`solhint --init && sed -i 's/"extends": "solhint:default"/%s/' .solhint.json && cat .solhint.json`, newConfigFile)}
+	// fmt.Println(cmd)
 
+	_, err = performExec(cli, resp, setupCmd)
+	if err != nil {
+		return models.SolhintResultDetail{}, helper.MakeError(err, "(solhint) perform setup execution")
+	}
+	// fmt.Print("Solhint haiz is: ", string(haiz))
 
-// 	var returnResult models.SolhintResultDetail
-// 	if err := json.Unmarshal(result, &returnResult); err != nil {
-// 		return models.SolhintResultDetail{}, helper.MakeError(err, "(solhint) json unmarshal")
-// 	}
+	var cmd []string = []string{"sh", "-c", fmt.Sprintf("solhint /share/result/%s/%s -f json", contractFolder, file)}
+	result, err := performExec(cli, resp, cmd)
+	if err != nil {
+		return models.SolhintResultDetail{}, helper.MakeError(err, "(solhint) perform analyze execution")
+	}
 
-// 	// decoder := json.NewDecoder(execResp.Reader)
-// 	// err = decoder.Decode(&returnResult)
-// 	// if err != nil {
-// 	// 	return models.SlitherResultDetail{}, helper.MakeError(err, "(slither) decode result")
-// 	// }
+	result = []byte(helper.RemoveAfterFirstChar(string(result),"["))
+	// fmt.Print("Solhint result is: ", string(result))
 
-// 	// result = helper.RemoveAfterFirstChar(result,"{")
-
-// 	return returnResult, nil
-// }
+	// if rune(string(result)[0]) != rune('[') {
+	// 	return models.SolhintResultDetail{}, err
+	// }
 
 
-// func GetSolhintSumUp(detail models.SolhintResultDetail) []models.SumUp{
-// 	var sumups []models.SumUp
-// 	for _, issue := range detail.Issues{
-// 		sumup := models.SumUp{
-// 			Name: SlitherVulnaClass[issue.ID],
-// 			Description: issue.Description,
-// 			Severity: issue.Impact,
-// 		}
-// 		sumups = append(sumups, sumup)
-// 	}
-// 	return sumups
-// }
+	var returnResult models.SolhintResultDetail
+	if err := json.Unmarshal(result, &returnResult); err != nil {
+		return models.SolhintResultDetail{}, helper.MakeError(err, "(solhint) json unmarshal")
+	}
+
+	return returnResult, nil
+}
+
+
+func GetSolhintSumUp(detail models.SolhintResultDetail, err error) []models.SumUp{
+	var sumups []models.SumUp
+	if err != nil {
+		sumups = append(sumups, models.SumUp{
+			Name: "SOLHINT ERROR",
+			Description: "Solhint fail to analyze contract",
+			Severity: "",
+		})
+		return sumups
+	}
+	for _, issue := range detail{
+		if issue.Issues != nil{
+			seveDefine := ""
+			switch issue.Issues.Severity{
+			case "off":
+				seveDefine = "Low"
+				break
+			case "warn":
+				seveDefine = "Medium"
+				break
+			case "error":
+				seveDefine = "High"
+				break
+			default:
+				seveDefine = "Low"
+				break
+			} 
+			sumup := models.SumUp{
+				Name: issue.Issues.RuleID,
+				Description: issue.Issues.Message,
+				Severity: seveDefine,
+			}
+			sumups = append(sumups, sumup)
+		}
+	}
+	return sumups
+}

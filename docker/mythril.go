@@ -7,6 +7,7 @@ import (
 	"getContractDeployment/helper"
 	"getContractDeployment/models"
 	"os"
+	"time"
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/client"
@@ -16,16 +17,44 @@ type RemappingJSON struct {
 	Remappings []string `json:"remappings"`
 }
 
+func RunMythrilAnalysisWithTimeOut(file string, contractFolder string, remappingJSON bool) (models.MythrilResultDetail, error) {
+	// Create a context with timeout
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Minute)
+	defer cancel()
+
+	// Channel to receive the result
+	resultChan := make(chan struct {
+		result models.MythrilResultDetail
+		err    error
+	}, 1)
+
+	// Run the fetchMythrilResult function in a separate goroutine
+	go func() {
+		result, err := RunMythrilAnalysis(file, contractFolder, remappingJSON)
+		resultChan <- struct {
+			result models.MythrilResultDetail
+			err    error
+		}{result, err}
+	}()
+
+	// Use a select statement to wait for either the result or the context timeout
+	select {
+	case res := <-resultChan:
+		return res.result, res.err
+	case <-ctx.Done():
+		return models.MythrilResultDetail{}, fmt.Errorf("Mythril time out")
+	}
+}
+
+
 func RunMythrilAnalysis(file string, contractFolder string, remappingJSON bool) (models.MythrilResultDetail, error) {
 	ctx := context.Background()
 
-	// Create a Docker client
 	cli, err := client.NewClientWithOpts(client.FromEnv)
 	if err != nil{
 		return models.MythrilResultDetail{}, helper.MakeError(err, "(mythril) new docker client")
 	}
 
-	// Run Mythril Docker container to analyze the smart contract
 	result, err := runMythrilContainer(ctx, cli, contractFolder, file, remappingJSON)
 	if err != nil{
 		return models.MythrilResultDetail{}, err
@@ -38,7 +67,7 @@ func RunMythrilAnalysis(file string, contractFolder string, remappingJSON bool) 
 	var returnResult models.MythrilResultDetail
 	err = json.Unmarshal([]byte(result), &returnResult)
 	if err != nil {
-		return models.MythrilResultDetail{}, helper.MakeError(err, "(mythril) json unmarshal")
+		return models.MythrilResultDetail{}, err
 	}
 
 	jsonData, err := json.Marshal(result)
@@ -156,8 +185,17 @@ func runMythrilContainer(ctx context.Context, cli *client.Client, contractFolder
 
 // }
 
-func GetMythrilSumUp(detail models.MythrilResultDetail) []models.SumUp{
+func GetMythrilSumUp(detail models.MythrilResultDetail, err error) []models.SumUp{
 	var sumups []models.SumUp
+	if err != nil{
+		sumups = append(sumups, models.SumUp{
+			Name: "MYTHRIL ERROR",
+			Description: "Mythril fail to analyze contract",
+			Severity: "",
+		})
+		return sumups
+	}
+
 	for _, issue := range detail.Issues{
 		sumup := models.SumUp{
 			Name: MythrilVulnaClass[issue.SwcID],

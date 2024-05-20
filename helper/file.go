@@ -50,6 +50,13 @@ func RemoveAfterFirstChar(input string, char string) string {
 	return input[index:]
 }
 
+func RemoveAfterXChar(input string, char string, x int) string {
+	for i := 0; i < x; i++ {
+		input = RemoveAfterFirstChar(input, char)
+	}
+	return input
+}
+
 func WriteJSONToFile(data string, filename string) error {
 	// Marshal the JSON data
 	jsonBytes := []byte(data)

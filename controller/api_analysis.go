@@ -117,7 +117,7 @@ func getAnalysisResult(contractData models.Contract, contractFolder string, rema
 		ctx, _ := context.WithTimeout(context.Background(), 3600*time.Second)
 		col := getCollection(client, config, "analysis")
 	
-		result, err = getAnalysisFromDB(ctx, col, contractData.ContractID)
+		result, err = getAnalysisViaContractFromDB(ctx, col, contractData.ContractID)
 		if err == nil {
 			return result, nil
 		} else if err != mongo.ErrNoDocuments {
@@ -151,20 +151,16 @@ func getAnalysisResult(contractData models.Contract, contractFolder string, rema
 func returnFullResult(mainFile string, contractFolder string, contractID int, remapping bool) (models.Result, error){
 
 	var toolsResult []models.ToolResult
+	start := time.Now()
 
-	// Start analysis timer
 	mythrilStart := time.Now()
-	
-	// Run container
-	mythrilDetail, err := docker.RunMythrilAnalysis(mainFile, contractFolder, remapping)
-
-	// End analysis timer
+	mythrilDetail, err := docker.RunMythrilAnalysisWithTimeOut(mainFile, contractFolder, remapping)
+	if err != nil{
+		helper.WriteFileExtra(err.Error(), "log.txt")
+		// return models.Result{}, err
+	}
 	mythrilEnd := time.Since(mythrilStart)
-
-	// Get sum up result
-	mythrilSumUp := docker.GetMythrilSumUp(mythrilDetail)
-
-
+	mythrilSumUp := docker.GetMythrilSumUp(mythrilDetail, err)
 	var mythril models.ToolResult
 	mythril.ToolName = "mythril"
 	mythril.NoError = len(mythrilDetail.Issues)
@@ -172,92 +168,101 @@ func returnFullResult(mainFile string, contractFolder string, contractID int, re
 	mythril.Detail = mythrilDetail
 	mythril.TimeElapsed = mythrilEnd.Seconds()
 	toolsResult = append(toolsResult, mythril)
-
-	// var wg sync.WaitGroup
-	// wg.Add(2)
-
-	// outputChan := make(chan models.ToolResult)
-
-	// go func(){
-	// 	defer wg.Done()
-
-
-
-	// if err != nil {
-	// 	helper.WriteFileExtra(err.Error(), "log.txt")
-	// } else {
-
-	// }
-
-
-	// toolsResult = append(toolsResult, mythril)
-	// outputChan <- mythril
-	// totalTimeElapsed += mythrilEnd.Seconds()
 	helper.WriteFileExtra(fmt.Sprint("pass mythril"), "log.txt")
-	// }()
-	// mythrilStart := time.Now()
-	// mythrilDetail, err := docker.RunMythrilAnalysis(mainFile, contractFolder, remapping)
-	// if err != nil{
-	// 	return models.Result{}, err
-	// }
-	// mythrilSumUp := docker.GetMythrilSumUp(mythrilDetail)
-	// mythrilEnd := time.Since(mythrilStart)
 
-	// var mythril models.ToolResult
-	// mythril.ToolName = "mythril"
-	// mythril.NoError = len(mythrilDetail.Issues)
-	// mythril.SumUps = mythrilSumUp
-	// mythril.Detail = mythrilDetail
-	// mythril.TimeElapsed = mythrilEnd.Seconds()
-	// toolsResult = append(toolsResult, mythril)
-	// totalTimeElapsed += mythrilEnd.Seconds()
-	// helper.WriteFileExtra(fmt.Sprint("pass mythril"), "log.txt")
+
 
 	slitherStart := time.Now()
-	slitherDetail, err := docker.RunSlitherAnalysis(mainFile, contractFolder, remapping)
+	slitherDetail, err := docker.RunSlitherAnalysisWithTimeOut(mainFile, contractFolder, remapping)
 	if err != nil{
 		helper.WriteFileExtra(err.Error(), "log.txt")
-		return models.Result{}, err
+		// return models.Result{}, err
 	}
-	slitherSumUp := docker.GetSlitherSumUp(slitherDetail)
+	slitherSumUp := docker.GetSlitherSumUp(slitherDetail, err)
 	slitherEnd := time.Since(slitherStart)
-
 	var slither models.ToolResult
 	slither.ToolName = "slither"
 	slither.SumUps = slitherSumUp
-	slither.NoError = len(slitherSumUp)
+	if slitherSumUp[0].Name != "SLITHER ERROR" {
+		slither.NoError = len(slitherSumUp)
+	} else {
+		slither.NoError = 0
+	}
 	slither.Detail = slitherDetail
 	slither.TimeElapsed = slitherEnd.Seconds()
 	toolsResult = append(toolsResult, slither)
-	// toolsResult = append(toolsResult, slither)
-	// outputChan <- slither
-	// totalTimeElapsed += slitherEnd.Seconds()
 	helper.WriteFileExtra(fmt.Sprint("pass slither"), "log.txt")
 
-	// Close the output channel once both Goroutines are done.
-	// go func() {
-	// 	wg.Wait()
-	// 	close(outputChan)
-	// }()
-	
-	// for output := range outputChan {
-	// 	toolsResult = append(toolsResult, output)
-	// }
+
+
+	solhintStart := time.Now()
+	solhintDetail, err := docker.RunSolHintAnalysisWithTimeOut(mainFile, contractFolder, remapping)
+	if err != nil{
+		helper.WriteFileExtra(err.Error(), "log.txt")
+		// return models.Result{}, err
+	}
+	solhintSumUp := docker.GetSolhintSumUp(solhintDetail, err)
+	solhintEnd := time.Since(solhintStart)
+	var solhint models.ToolResult
+	solhint.ToolName = "solhint"
+	solhint.SumUps = solhintSumUp
+	if solhintSumUp[0].Name != "SOLHINT ERROR" {
+		solhint.NoError = len(solhintSumUp)
+	} else {
+		solhint.NoError = 0
+	}
+	solhint.Detail = solhintDetail
+	solhint.TimeElapsed = solhintEnd.Seconds()
+	toolsResult = append(toolsResult, solhint)
+	helper.WriteFileExtra(fmt.Sprint("pass solhint"), "log.txt")
+
+
+
+
+	honeybadgerStart := time.Now()
+	honeybadgerDetail, err := docker.RunHoneyBadgerAnalysisWithTimeOut(mainFile, contractFolder, remapping)
+	if err != nil{
+		helper.WriteFileExtra(err.Error(), "log.txt")
+		// return models.Result{}, err
+	}
+	// fmt.Print(detail)
+	honeybadgerSumUp := docker.GetHoneyBadgerSumUp(honeybadgerDetail, err)
+	honeybadgerEnd := time.Since(honeybadgerStart)
+	var honeybadger models.ToolResult
+	honeybadger.ToolName = "honeybadger"
+	honeybadger.SumUps = honeybadgerSumUp
+	if honeybadgerSumUp[0].Name != "HONEYBADGER ERROR" {
+		honeybadger.NoError = len(honeybadgerSumUp)
+	} else {
+		honeybadger.NoError = 0
+	}
+	honeybadger.Detail = honeybadgerDetail
+	honeybadger.TimeElapsed = honeybadgerEnd.Seconds()
+	toolsResult = append(toolsResult, honeybadger)
+	helper.WriteFileExtra(fmt.Sprint("pass honeybadger"), "log.txt")
+
+
+
+	standardize := StandardizeResult(toolsResult)
 
 	return models.Result{
 		ContractID: contractID,
 		ToolsResult: toolsResult,
+		StandardizeResult: standardize,
+		CreatedAt: start,
 	}, nil
 }
 
 
 func StandardizeResult(toolsResult []models.ToolResult) models.StandardizeResults {
 
-	// Map vulnerability to its highest severity
 	vulneToServerity := make(map[string]string)
 	for _, toolResult := range toolsResult{
 		for _, sumUp := range toolResult.SumUps{
 			vulne, severity := IdentifyVulnerability(sumUp, toolResult.ToolName)
+			if vulne == ""{
+				continue
+			}
 			_, exist := vulneToServerity[vulne]
 			if !exist {
 				vulneToServerity[vulne] = severity
@@ -268,7 +273,6 @@ func StandardizeResult(toolsResult []models.ToolResult) models.StandardizeResult
 		}
 	} 
 
-	// Get standardize result
 	standardizeResult := models.StandardizeResults{
 		NoError: 0,
 		Result: []models.StandardizeResult{},
@@ -295,7 +299,11 @@ func IdentifyVulnerability(sumup models.SumUp, tool string) (string, string) {
 	if tool == "mythril"{
 		return docker.MythrilStandardize(sumup)
 	} else if tool == "slither"{
-		return "", ""
+		return docker.SlitherStandardize(sumup)
+	} else if tool == "solhint"{
+		return docker.SolhintStandardize(sumup)
+	} else if tool == "honeybadger"{
+		return docker.HoneyBadgerStandardize(sumup)
 	}
 	return  "", ""
 }

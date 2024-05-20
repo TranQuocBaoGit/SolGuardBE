@@ -1,50 +1,21 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.22;
 
-contract EtherStore {
-    mapping(address => uint256) public balances;
 
-    function deposit() public payable {
-        balances[msg.sender] += msg.value;
-    }
+contract GuessTheRandomNumber {
+    constructor() payable {}
 
-    function withdraw() public {
-        uint256 bal = balances[msg.sender];
-        require(bal > 0);
+    function guess(uint256 _guess) public {
+        uint256 answer = uint256(
+            keccak256(
+                abi.encodePacked(blockhash(block.number - 1), block.timestamp)
+            )
+        );
 
-        (bool sent,) = msg.sender.call{value: bal}("");
-        require(sent, "Failed to send Ether");
-
-        balances[msg.sender] = 0;
-    }
-
-    // Helper function to check the balance of this contract
-    function getBalance() public view returns (uint256) {
-        return address(this).balance;
+        if (_guess == answer) {
+            (bool sent,) = msg.sender.call{value: 1 ether}("");
+            require(sent, "Failed to send Ether");
+        }
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
