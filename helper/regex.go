@@ -1,6 +1,7 @@
 package helper
 
 import (
+	"bytes"
 	"fmt"
 	"regexp"
 	"strings"
@@ -88,4 +89,42 @@ func ChangeFromSolToJson(file string) string {
 	}
 	// }
 	return file
+}
+
+func ChangeSolidityVersion(sourceCode, targetVersion string) (string, error) {
+    // Define the regular expression to match the Solidity version pragma
+    re := regexp.MustCompile(`pragma solidity\s+[^;]+;`)
+
+    // Define the new pragma version string
+    newPragma := fmt.Sprintf("pragma solidity %s;", targetVersion)
+
+    // Replace the old pragma version with the new one
+    modifiedSourceCode := re.ReplaceAllString(sourceCode, newPragma)
+
+    // Check if any replacements were made (if no matches, it might be an error or simply no pragma found)
+    if strings.Contains(modifiedSourceCode, newPragma) {
+        return modifiedSourceCode, nil
+    } else {
+        return "", fmt.Errorf("no Solidity version pragma found in the source code")
+    }
+}
+
+func EnsureCommas(jsonStr string) string {
+    var buffer bytes.Buffer
+
+    for i := 0; i < len(jsonStr); i++ {
+        buffer.WriteByte(jsonStr[i])
+
+        if jsonStr[i] == '}' && i+1 < len(jsonStr) && jsonStr[i+1] != ',' && jsonStr[i+1] != ']' && jsonStr[i+1] != ' ' {
+            buffer.WriteByte(',')
+        }
+    }
+
+    return buffer.String()
+}
+
+// Function to remove trailing commas before closing braces
+func RemoveTrailingCommas(jsonStr string) string {
+    re := regexp.MustCompile(`,\s*}`)
+    return re.ReplaceAllString(jsonStr, "}")
 }

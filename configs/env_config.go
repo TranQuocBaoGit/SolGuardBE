@@ -9,6 +9,7 @@ type Config struct{
 	CONTRACT_PATH 		string `mapstructure:"CONTRACT_PATH"`
 	MONGO_URI 			string `mapstructure:"MONGO_URI"`
 	DATABASE_NAME		string `mapstructure:"DATABASE_NAME"`
+	OPENAI_API_KEY 		string `mapstructure:"OPENAI_API_KEY"`
 }
 
 func LoadConfig(path string) (config Config, err error){
@@ -36,6 +37,7 @@ func LoadConfig(path string) (config Config, err error){
 	server := envFile["SERVER"]
 	mongo := envFile["MONGO_URI"]
 	database := envFile["DATABASE_NAME"]
+	openaiKey := envFile["OPENAI_API_KEY"]
 
 
 	return Config{
@@ -45,5 +47,6 @@ func LoadConfig(path string) (config Config, err error){
 		CONTRACT_PATH: "",
 		MONGO_URI: mongo,
 		DATABASE_NAME: database,
+		OPENAI_API_KEY: openaiKey,
 	}, nil
 }

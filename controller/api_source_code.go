@@ -3,10 +3,12 @@ package controller
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"getContractDeployment/configs"
 	"getContractDeployment/helper"
 	"getContractDeployment/models"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 
@@ -16,14 +18,19 @@ import (
 
 func GetContractSourceCode() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		var formData AddressFormData
-		err := c.ShouldBind(&formData)
+		// var formData AddressFormData
+		// err := c.ShouldBind(&formData)
+		address := c.Query("address")
+		chainidStr := c.Query("chainid")
+		helper.WriteFileExtra(fmt.Sprint(helper.GetTimeNow(), " (Source Code API) Chain ID: ", chainidStr), "log.txt")
+		chainid, err :=  strconv.Atoi(chainidStr)
+		helper.WriteFileExtra(fmt.Sprint(helper.GetTimeNow(), " (Source Code API) Get source from: ", address), "log.txt")
 		if err != nil {
 			responsesReturn(c, http.StatusInternalServerError, err.Error(), nil)
 			return
 		}
 
-		dataReturn, err := getContractSourceCode(formData.ChainID, formData.Address)
+		dataReturn, err := getContractSourceCode(chainid, address)
 		if err != nil {
 			responsesReturn(c, http.StatusInternalServerError, err.Error(), nil)
 			return
@@ -45,7 +52,7 @@ func getContractSourceCode(chainID int, address string) (models.Contract, error)
 	ctx, _ := context.WithTimeout(context.Background(), 3600*time.Second)
 	col := getCollection(client, config, "smc")
 
-	result, err = getSourceCodeFromDB(ctx, col, address)
+	result, err = getSourceCodeViaAddressFromDB(ctx, col, address)
 	if err == nil {
 		return result, nil
 	} else if err != mongo.ErrNoDocuments {

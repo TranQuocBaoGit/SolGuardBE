@@ -20,7 +20,7 @@ type mythrilIssuesDetail struct {
 	MaxGasUsed  int         `json:"max_gas_used"`
 	MinGasUsed  int         `json:"min_gas_used"`
 	Severity    string      `json:"severity"`
-	SourceMap   string      `json:"sourceMap"`
+	SourceMap   interface{} `json:"sourceMap"`
 	SwcID       string      `json:"swc-id"`
 	Title       string      `json:"title"`
 	TxSequence  interface{} `json:"txsequence"`
@@ -49,10 +49,27 @@ type EachSiltherDetector struct {
 }
 
 type SlitherElement struct {
-	Type               string      `json:"type"`
-	Name               string      `json:"name"`
-	SourceMapping      interface{} `json:"source_mapping"`
-	TypeSpecificFields interface{} `json:"type_specific_fields"`
+	Type               string      			`json:"type"`
+	Name               string      			`json:"name"`
+	SourceMapping      SourceMapping 		`json:"source_mapping,omitempty"`
+	TypeSpecificFields TypeSpecificFields 	`json:"type_specific_fields,omitempty"`
+}
+
+type SourceMapping struct {
+	Start 				int 	`json:"start"`
+	Length  			int 	`json:"length"`
+	FileNameRelative 	string 	`json:"filename_relative"`
+	FileNameAbsolute 	string 	`json:"filename_absolute"`
+	FileNameShort 		string 	`json:"filename_short"`
+	IsDependancy 		bool 	`json:"is_dependency"`
+	Lines 				[]int 	`json:"lines"`
+	StartingColumn 		int 	`json:"starting_column"`
+	EndingColumn 		int 	`json:"ending_column"`
+}
+
+type TypeSpecificFields struct {
+	Parent 		interface{} `json:"parent"`
+	Signature 	string 		`json:"signature"`
 }
 
 // SOLHINT
@@ -73,7 +90,7 @@ type SolhintIssue struct {
 	Severity string 	`json:"severity"`
 	Message  string 	`json:"message"`
 	RuleID   string 	`json:"ruleId"`
-	Fix      *string 	`json:"fix,omitempty"`
+	// Fix      *string 	`json:"fix,omitempty"`
 	FilePath string 	`json:"filePath"`
 }
 

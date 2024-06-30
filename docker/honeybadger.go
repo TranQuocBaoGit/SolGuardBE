@@ -16,7 +16,7 @@ import (
 
 func RunHoneyBadgerAnalysisWithTimeOut(file string, contractFolder string, remappingJSON bool) (models.HoneyBadgerResultDetail, error) {
 	// Create a context with timeout
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Minute)
+	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
 	defer cancel()
 
 	// Channel to receive the result
@@ -96,19 +96,19 @@ func runHoneyBadgerContainer(ctx context.Context, cli *client.Client, file strin
 	var setupCmd []string = []string{"bash", "-c", fmt.Sprintf(`mkdir results && touch results/%s`, helper.ChangeFromSolToJson(file))}
 	// fmt.Println(cmd)
 
-	_, err = performExec(cli, resp, setupCmd)
+	_, err = performExec(cli, resp, setupCmd, true)
 	if err != nil {
 		return models.HoneyBadgerResultDetail{}, helper.MakeError(err, "(honeybadger) perform setup execution")
 	}
 
 	var runAnalysisCmd []string = []string{"bash", "-c", fmt.Sprintf("python honeybadger/honeybadger.py -s /share/result/%s/%s -j", contractFolder, file)}
-	_, err = performExec(cli, resp, runAnalysisCmd)
+	_, err = performExec(cli, resp, runAnalysisCmd, true)
 	if err != nil {
 		return models.HoneyBadgerResultDetail{}, helper.MakeError(err, "(honeybadger) perform analyze execution")
 	}
 
 	var cmd []string = []string{"bash", "-c", fmt.Sprintf("cat results/%s", helper.ChangeFromSolToJson(file))}
-	result, err := performExec(cli, resp, cmd)
+	result, err := performExec(cli, resp, cmd, true)
 	if err != nil {
 		return models.HoneyBadgerResultDetail{}, helper.MakeError(err, "(honeybadger) get analyze execution")
 	}
@@ -136,7 +136,7 @@ func GetHoneyBadgerSumUp(detail models.HoneyBadgerResultDetail, err error) []mod
 	if err != nil {
 		sumups = append(sumups, models.SumUp{
 			Name: "HONEYBADGER ERROR",
-			Description: "Honeybadger fail to analyze contract",
+			Description: err.Error(),
 			Severity: "",
 		})
 		return sumups
@@ -152,56 +152,56 @@ func GetHoneyBadgerSumUp(detail models.HoneyBadgerResultDetail, err error) []mod
 
 	if balanceDisorder.Kind() == reflect.String{
 		sumups = append(sumups, models.SumUp{
-			Name: "Balance Disorder",
+			Name: "Balance Disorder Honeypot",
 			Severity: "Medium",
 			Description: detail.BalanceDisorder.(string),
 		})
 	}
 	if hiddenStateUpdate.Kind() == reflect.String{
 		sumups = append(sumups, models.SumUp{
-			Name: "Hidden State Update",
+			Name: "Hidden State Update Honeypot",
 			Severity: "Medium",
 			Description: detail.HiddenStateUpdate.(string),
 		})
 	}
 	if hiddenTransfer.Kind() == reflect.String{
 		sumups = append(sumups, models.SumUp{
-			Name: "Hidden Transfer",
+			Name: "Hidden Transfer Honeypot",
 			Severity: "Medium",
 			Description: detail.HiddenTransfer.(string),
 		})
 	}
 	if skipEmptyStringLiteral.Kind() == reflect.String{
 		sumups = append(sumups, models.SumUp{
-			Name: "Skip String Literal",
+			Name: "Skip Empty String Literal Honeypot",
 			Severity: "Medium",
 			Description: detail.SkipEmptyStringLiteral.(string),
 		})
 	}
 	if inheritanceDisorder.Kind() == reflect.String{
 		sumups = append(sumups, models.SumUp{
-			Name: "Inheritance Disorder",
+			Name: "Inheritance Disorder Honeypot",
 			Severity: "Medium",
 			Description: detail.InheritanceDisorder.(string),
 		})
 	}
 	if uninitialisedStruct.Kind() == reflect.String{
 		sumups = append(sumups, models.SumUp{
-			Name: "Uninitalised Struct",
+			Name: "Uninitalised Struct Honeypot",
 			Severity: "Medium",
 			Description: detail.UninitialisedStruct.(string),
 		})
 	}
 	if strawManContract.Kind() == reflect.String{
 		sumups = append(sumups, models.SumUp{
-			Name: "Straw Man Hat",
+			Name: "Straw Man Hat Honeypot",
 			Severity: "Medium",
 			Description: detail.StrawManContract.(string),
 		})
 	}
 	if typeDeductionOverflow.Kind() == reflect.String{
 		sumups = append(sumups, models.SumUp{
-			Name: "Type Deduction Overflow",
+			Name: "Type Deduction Overflow Honeypot",
 			Severity: "Medium",
 			Description: detail.TypeDeductionOverflow.(string),
 		})

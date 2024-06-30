@@ -37,6 +37,39 @@ func createContainer(
 	return resp, err
 }
 
+func ListRunningContainerIDs() ([]string, error) {
+    cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
+    if err != nil {
+        return nil, err
+    }
+
+    ctx := context.Background()
+    containers, err := cli.ContainerList(ctx, types.ContainerListOptions{All: false})
+    if err != nil {
+        return nil, err
+    }
+    var containerIDs []string
+    for _, container := range containers {
+        containerIDs = append(containerIDs, container.ID)
+    }
+
+    return containerIDs, nil
+}
+
+func RemoveContainerByID(containerID string) error {
+    cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
+    if err != nil {
+        return err
+    }
+    ctx := context.Background()
+
+    if err := cli.ContainerRemove(ctx, containerID, types.ContainerRemoveOptions{Force: true}); err != nil {
+        return err
+    }
+
+    return nil
+}
+
 func listImage(){
 	ctx := context.Background()
 	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
@@ -97,11 +130,12 @@ func retrieveContainerLogs(ctx context.Context, cli *client.Client, resp contain
 	return logBytes, nil
 }
 
-func performExec(cli *client.Client, resp container.CreateResponse, cmd []string) ([]byte, error){
+func performExec(cli *client.Client, resp container.CreateResponse, cmd []string, tty bool) ([]byte, error){
 	execConfig := types.ExecConfig{
 		Cmd:          cmd,
 		AttachStdout: true,
 		AttachStderr: true,
+		Tty: tty,
 	}
 
 	respExec, err := cli.ContainerExecCreate(context.Background(), resp.ID, execConfig)
@@ -115,21 +149,41 @@ func performExec(cli *client.Client, resp container.CreateResponse, cmd []string
 	// return &execResp, nil
 	defer execResp.Close()
 
-	// decoder := json.NewDecoder(execResp.Reader)
-
-	// return decoder, nil
-
 	var buf strings.Builder
 
-	// copy execResp to string buf
 	_, err = io.Copy(&buf, execResp.Reader)
 	if err != nil {
 		return nil, helper.MakeError(err, "(general_docker) copy exec resp to string")
 	}
 
-	result := helper.CleanupJSON([]byte(buf.String()))
+	// var buf bytes.Buffer
+	// _, err = io.Copy(&buf, execResp.Reader)
+	// if err != nil {
+	//   return nil, helper.MakeError(err, "(general_docker) copy exec resp to string")
+	// }
 
-	return result, nil
+	// result := []byte(helper.RemoveAfterFirstChar(buf.String(),"{"))
+	// resultReturn, err := helper.HandleJSON(result)
+	// if err != nil {
+	// 	return nil, helper.MakeError(err, "(general_docker) handle json")
+	// }
+
+// 	var encoder *json.Encoder
+//   // Use a custom buffer with a larger size
+// 	buffer := bytes.NewBuffer(make([]byte, 1024 * 1024)) // Adjust buffer size as needed
+// 	encoder = json.NewEncoder(buffer)
+// 	encoder.SetIndent("", "")
+
+// 	var data interface{}
+// 	err = encoder.Encode(data)
+// 	if err != nil {
+// 		return nil, helper.MakeError(err, "(general_docker) copy exec resp to string")
+// 	}
+
+
+	// result = helper.CleanupJSON(result)
+
+	return []byte(buf.String()), nil
 }
 
 // func deleteContainer(ctx context.Context, cli *client.Client, resp container.CreateResponse) (error){

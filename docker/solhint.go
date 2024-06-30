@@ -15,7 +15,7 @@ import (
 
 func RunSolHintAnalysisWithTimeOut(file string, contractFolder string, remappingJSON bool) (models.SolhintResultDetail, error) {
 	// Create a context with timeout
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Minute)
+	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
 	defer cancel()
 
 	// Channel to receive the result
@@ -96,14 +96,15 @@ func runSolhintContainer(ctx context.Context, cli *client.Client, file string, c
 	var setupCmd []string = []string{"sh", "-c", fmt.Sprintf(`solhint --init && sed -i 's/"extends": "solhint:default"/%s/' .solhint.json && cat .solhint.json`, newConfigFile)}
 	// fmt.Println(cmd)
 
-	_, err = performExec(cli, resp, setupCmd)
+	setupStupid, err := performExec(cli, resp, setupCmd, true)
 	if err != nil {
 		return models.SolhintResultDetail{}, helper.MakeError(err, "(solhint) perform setup execution")
 	}
+	fmt.Println(string(setupStupid))
 	// fmt.Print("Solhint haiz is: ", string(haiz))
 
 	var cmd []string = []string{"sh", "-c", fmt.Sprintf("solhint /share/result/%s/%s -f json", contractFolder, file)}
-	result, err := performExec(cli, resp, cmd)
+	result, err := performExec(cli, resp, cmd, true)
 	if err != nil {
 		return models.SolhintResultDetail{}, helper.MakeError(err, "(solhint) perform analyze execution")
 	}
@@ -115,9 +116,17 @@ func runSolhintContainer(ctx context.Context, cli *client.Client, file string, c
 	// 	return models.SolhintResultDetail{}, err
 	// }
 
+	// jsonData, err := json.Marshal(string(result))
+	// if err != nil {
+	// 	return models.SolhintResultDetail{}, err
+	// }
+
+	helper.WriteJSONToFile(string(result), "solhint.json")
+
 
 	var returnResult models.SolhintResultDetail
-	if err := json.Unmarshal(result, &returnResult); err != nil {
+	err = json.Unmarshal(result, &returnResult)
+	if err != nil {
 		return models.SolhintResultDetail{}, helper.MakeError(err, "(solhint) json unmarshal")
 	}
 
@@ -130,7 +139,7 @@ func GetSolhintSumUp(detail models.SolhintResultDetail, err error) []models.SumU
 	if err != nil {
 		sumups = append(sumups, models.SumUp{
 			Name: "SOLHINT ERROR",
-			Description: "Solhint fail to analyze contract",
+			Description: err.Error(),
 			Severity: "",
 		})
 		return sumups
@@ -149,13 +158,18 @@ func GetSolhintSumUp(detail models.SolhintResultDetail, err error) []models.SumU
 				seveDefine = "High"
 				break
 			default:
-				seveDefine = "Low"
+				seveDefine = "None"
 				break
 			} 
 			sumup := models.SumUp{
 				Name: issue.Issues.RuleID,
 				Description: issue.Issues.Message,
 				Severity: seveDefine,
+				Location: models.Location{
+					Contract: "",
+					Function: "",
+					Line: []int{issue.Issues.Line},
+				},
 			}
 			sumups = append(sumups, sumup)
 		}

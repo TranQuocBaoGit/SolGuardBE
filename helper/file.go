@@ -1,6 +1,9 @@
 package helper
 
 import (
+	"bytes"
+	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
@@ -44,7 +47,6 @@ func GetPathToFile(inputPath string) string {
 func RemoveAfterFirstChar(input string, char string) string {
 	index := strings.Index(input, char)
 	if index == -1 {
-		// If "{" is not found, return the original string
 		return input
 	}
 	return input[index:]
@@ -85,3 +87,19 @@ func CleanupJSON(data []byte) []byte {
 
 	return []byte(cleanedString)
 }
+
+func HandleJSON(data interface{}) ([]byte, error) {
+	// Use a custom buffer with a larger size
+	buffer := bytes.NewBuffer(make([]byte, 1024 * 1024)) // Adjust buffer size as needed
+	encoder := json.NewEncoder(buffer)
+  
+	// Set encoder options to handle large arrays without truncation
+	encoder.SetIndent("", "") // Remove indentation for better space efficiency
+	// You might consider other options like encoder.SetEscapeHTML(false)
+  
+	err := encoder.Encode(data)
+	if err != nil {
+	  return nil, fmt.Errorf("error encoding JSON: %w", err)
+	}
+	return buffer.Bytes(), nil
+  }

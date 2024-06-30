@@ -13,18 +13,25 @@ type FileAnalysisFormData struct {
 }
 
 type User struct {
-	WalletAddress string   `form:"wallet_address"`
+	WalletAddress string   `form:"wallet_address" json:"wallet_address"`
 }
 
 type AddressAnalysisFormData struct {
-	Address string   `form:"address"`
-	ChainID int      `form:"chainid"`
-	WalletAddress string `form:"wallet_address"`
+	WalletAddress string `form:"wallet_address" json:"wallet_address"`
+	Address string   `form:"address" json:"address"`
+	ChainID string   `form:"chainid" json:"chainid"`
+	Dapp 	string 	 `form:"dApp,omitempty" json:"dApp,omitempty"`
+	Decision string  `form:"decision,omitempty" json:"decision,omitempty"`
 }
 
 type AddressFormData struct {
-	Address string `form:"address"`
-	ChainID int    `form:"chainid"`
+	Address string `form:"address" json:"address"`
+	ChainID int    `form:"chainid" json:"chainid"`
+}
+
+type DeleteHistoryFormData struct {
+	WalletAddress 		string `form:"wallet_address" json:"wallet_address"`
+	HistoryAnalyzeID 	string `form:"history_analyze_id" json:"history_analyze_id"`
 }
 
 func responsesReturn(c *gin.Context, status int, message string, data interface{}){

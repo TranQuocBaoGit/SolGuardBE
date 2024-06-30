@@ -239,6 +239,9 @@ func SlitherStandardize(sumup models.SumUp) (string, string) {
 func SolhintStandardize(sumup models.SumUp) (string, string) {
 	name := sumup.Name
 	severity := sumup.Severity
+	if severity == "None"{
+		return "",""
+	}
 	vulnaDefine := ""
 	
 	switch name {
